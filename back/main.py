@@ -245,6 +245,24 @@ def chat_sel():
     model_name = base64.b64decode(request.args.get('name')).decode('utf-8')
     chat.recv_msg_list.append(
         chat.recv_msg_list_tmp[chat.recv_model_dict_tmp[model_name]])
+    chat.recv_msg_list_tmp = []
+    chat.recv_model_dict_tmp = {}
+    return 'success', 200
+
+
+@app.route('/chat/title')
+def chat_title():
+    """
+    修改会话标题.
+    """
+    user = get_user(session.get('username'), session.get('session_id'))
+    if user is None:
+        return 'invalid_user', 403
+    chat = get_chat(user, request.args.get('cid'))
+    if chat is None:
+        return 'invalid_chat_id', 403
+    title = base64.b64decode(request.args.get('title')).decode('utf-8')
+    chat.chat_title = title
     return 'success', 200
 
 
