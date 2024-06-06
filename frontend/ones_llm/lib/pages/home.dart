@@ -5,6 +5,8 @@ import 'package:ones_llm/components/chat.dart';
 import 'package:ones_llm/components/conversation.dart';
 
 class MyHomePage extends GetResponsiveView {
+  MyHomePage({super.key});
+
   @override
   Widget? phone() {
     print('phone');

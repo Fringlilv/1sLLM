@@ -8,7 +8,7 @@ import 'package:ones_llm/components/markdown.dart';
 import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/controller/message.dart';
 // import 'package:flutter_chatgpt/controller/settings.dart';
-import 'package:ones_llm/repository/conversation.dart';
+import 'package:ones_llm/services/api.dart';
 
 var uuid = const Uuid();
 
@@ -20,7 +20,7 @@ class ChatWindow extends StatefulWidget {
 }
 
 class _ChatWindowState extends State<ChatWindow> {
-  final _controller = TextEditingController();
+  final _textController = TextEditingController();
   final _formKey = GlobalKey<FormState>(); // 定义一个 GlobalKey
   final _scrollController = ScrollController();
 
@@ -31,9 +31,7 @@ class _ChatWindowState extends State<ChatWindow> {
       child: Column(
         children: [
           Expanded(
-            child: 
-            
-            GetX<MessageController>(
+            child: GetX<MessageController>(
               builder: (controller) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   _scrollToNewMessage();
@@ -48,7 +46,8 @@ class _ChatWindowState extends State<ChatWindow> {
                   );
                 } else {
                   return Container(
-                    child: const Text('text'),
+                    alignment: Alignment.center,
+                    child: const Text('empty'),
                   );
                   // return GetX<PromptController>(builder: ((controller) {
                   //   if (controller.prompts.isEmpty) {
@@ -78,7 +77,7 @@ class _ChatWindowState extends State<ChatWindow> {
                   Expanded(
                     child: TextFormField(
                       style: const TextStyle(fontSize: 13),
-                      controller: _controller,
+                      controller: _textController,
                       keyboardType: TextInputType.multiline,
                       decoration: InputDecoration(
                         labelText: "inputPrompt".tr,
@@ -120,38 +119,21 @@ class _ChatWindowState extends State<ChatWindow> {
     );
   }
 
-  Conversation _newConversation(String name, String description) {
-    var conversation = Conversation(
-      name: name,
-      description: description,
-      uuid: uuid.v4(),
-    );
-    return conversation;
-  }
-
-  void _sendMessage() {
-    final message = _controller.text.trim();
-    // final MessageController messageController = Get.find();
+  void _sendMessage() async {
+    final message = _textController.text.trim();
+    final MessageController messageController = Get.find();
     final ConversationController conversationController = Get.find();
     if (message.isNotEmpty) {
-      var conversationUuid =
+      var conversationId =
           conversationController.currentConversationUuid.value;
-      if (conversationUuid.isEmpty) {
-        // new conversation
-        //message 的前10个字符，如果message不够10个字符，则全部
-        var conversation = _newConversation(
-            message.substring(0, message.length > 20 ? 20 : message.length),
-            message);
-        conversationUuid = conversation.uuid;
-        conversationController.setCurrentConversationUuid(conversationUuid);
-        conversationController.addConversation(conversation);
+      if (conversationId.isEmpty) {
+        conversationId = await conversationController.addConversation(
+          name: message.substring(0, message.length > 20 ? 20 : message.length),
+          description: message,
+        );
+        conversationController.setCurrentConversationId(conversationId);
       }
-      final newMessage = Message(
-        conversationId: conversationUuid,
-        role: Role.user,
-        text: message,
-      );
-      // messageController.addMessage(newMessage);
+      messageController.sendMessage(conversationId, message);
       _formKey.currentState!.reset();
     }
   }

@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/controller/message.dart';
 // import 'package:flutter_chatgpt/controller/settings.dart';
-import 'package:ones_llm/repository/conversation.dart';
+import 'package:ones_llm/services/api.dart';
 
 class ConversationWindow extends StatelessWidget {
   const ConversationWindow({super.key});
@@ -44,7 +44,7 @@ class ConversationWindow extends StatelessWidget {
                             },
                             selected:
                                 controller.currentConversationUuid.value ==
-                                    controller.conversationList[index].uuid,
+                                    controller.conversationList[index].id,
                             leading: Icon(
                               Icons.chat,
                               color: Theme.of(context).colorScheme.primary,
@@ -153,7 +153,7 @@ class ConversationWindow extends StatelessWidget {
 
   void onTapNewConversation() {
     ConversationController controller = Get.find();
-    controller.setCurrentConversationUuid("");
+    controller.setCurrentConversationId("");
     MessageController messageController = Get.find();
     messageController.loadAllMessages("");
   }
@@ -201,7 +201,7 @@ class ConversationWindow extends StatelessWidget {
                 conversationController.renameConversation(Conversation(
                   name: controller.text,
                   description: "",
-                  uuid: conversationController.conversationList[index].uuid,
+                  id: conversationController.conversationList[index].id,
                 ));
                 Navigator.of(context).pop();
               },
@@ -216,7 +216,7 @@ class ConversationWindow extends StatelessWidget {
   _tapConversation(int index) {
     ConversationController controller = Get.find();
     closeDrawer();
-    String conversationUUid = controller.conversationList[index].uuid;
+    String conversationUUid = controller.conversationList[index].id;
     controller.currentConversationUuid(conversationUUid);
     MessageController controllerMessage = Get.find();
     controllerMessage.loadAllMessages(conversationUUid);

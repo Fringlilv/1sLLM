@@ -1,40 +1,48 @@
 import 'package:get/get.dart';
 
-import 'package:ones_llm/repository/conversation.dart';
+import 'package:ones_llm/services/api.dart';
 
 class ConversationController extends GetxController {
   final conversationList = <Conversation>[].obs;
+  final ApiService api = Get.find();
 
   final currentConversationUuid = "".obs;
 
   static ConversationController get to => Get.find();
   @override
   void onInit() async {
-    conversationList.value = await ConversationRepository().getConversations();
+    conversationList.value = await api.getConversations();
     super.onInit();
   }
 
-  void setCurrentConversationUuid(String uuid) async {
-    currentConversationUuid.value = uuid;
+  void setCurrentConversationId(String id) async {
+    currentConversationUuid.value = id;
     update();
   }
 
   void deleteConversation(int index) async {
     Conversation conversation = conversationList[index];
-    await ConversationRepository().deleteConversation(conversation.uuid);
-    conversationList.value = await ConversationRepository().getConversations();
+    await api.deleteConversation(conversation.id);
+    conversationList.value = await api.getConversations();
     update();
   }
 
   void renameConversation(Conversation conversation) async {
-    await ConversationRepository().updateConversation(conversation);
-    conversationList.value = await ConversationRepository().getConversations();
+    await api.renameConversation(conversation.id, name: conversation.name);
+    conversationList.value = await api.getConversations();
     update();
   }
 
-  void addConversation(Conversation conversation) async {
-    await ConversationRepository().addConversation(conversation);
-    conversationList.value = await ConversationRepository().getConversations();
+  Future<String> addConversation({name, description}) async {
+    final id = await api.addConversation();
+    conversationList.add(Conversation(
+      name: name, 
+      description: description, 
+      id: id)
+    );
+    conversationList.value = await api.getConversations();
     update();
+    print(conversationList);
+    return id;
   }
 }

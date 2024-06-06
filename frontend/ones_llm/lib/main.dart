@@ -4,9 +4,11 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-import 'package:ones_llm/route.dart';
+import 'package:ones_llm/configs/route.dart';
+import 'package:ones_llm/configs/translations.dart';
 import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/controller/message.dart';
+import 'package:ones_llm/services/api.dart';
 
 void main() async {
   await GetStorage.init();
@@ -19,6 +21,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(ApiService());
     Get.put(ConversationController());
     Get.put(MessageController());
     return GetMaterialApp(
@@ -30,7 +33,7 @@ class MyApp extends StatelessWidget {
       darkTheme: FlexThemeData.dark(scheme: FlexScheme.ebonyClay),
       themeMode: ThemeMode.system,
       locale: const Locale('zh'),
-      // translations: MyTranslations(),
+      translations: OnesLLMTranslations(),
       builder: EasyLoading.init(),
       debugShowCheckedModeBanner: false,
     );
