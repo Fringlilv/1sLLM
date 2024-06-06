@@ -6,9 +6,11 @@ import time
 
 import data
 from flask import Flask, request, session
+from flask_cors import CORS
 
 
 app = Flask(__name__)
+CORS(app)
 server = data.Sever()
 
 
