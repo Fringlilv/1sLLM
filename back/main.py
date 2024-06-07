@@ -25,7 +25,7 @@ def login():
     print(f'Login: {username}, {password}')
     # 服务器上记录会话信息
     sid = server.gen_session_id('admin')
-    server.session_dict[username] = sid
+    server.session_dict['admin'] = sid
     # 客户端cookie中记录会话信息
     session['username'] = 'admin'
     session['session_id'] = sid
