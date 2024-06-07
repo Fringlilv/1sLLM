@@ -1,3 +1,7 @@
+import hashlib
+import random
+import time
+
 class Api:
     """
     存储api信息的基类.
@@ -7,66 +11,114 @@ class Api:
         self.model_name = name
         self.api_key = key
 
+    def get_response(self, send_msg):
+        """
+        获取回复.
+        """
+        return 'echo: model = %s, send = %s' % (self.model_name, send_msg)
+
+    def __json__(self):
+        return {'model_name': self.model_name, 'api_key': self.api_key}
+
+
+class Message:
+    """
+    存储一条消息.
+    """
+
+    def __init__(self, role, msg):
+        self.role = role
+        self.msg = msg
+
+    def __json__(self):
+        return {'role': self.role, 'msg': self.msg}
+
 
 class Chat:
     """
     存储一次会话.
     属性:
-        send_msg_list: 发送消息列表
-        recv_msg_list: 接收消息列表 (选中的)
-        recv_msg_list_tmp: 接收消息列表 (最后一次回答, 可能有多个模型)
-        recv_model_dict_tmp: 模型名-recv_msg_list_tmp中的序号, 用于查找
+        msg_list: 消息列表
+        recv_msg_tmp: 模型名-Msg, 最后一次回答的接收消息
     """
 
     def __init__(self, cid, title):
         self.chat_id = cid
         self.chat_title = title
-        self.send_msg_list = []
-        self.recv_msg_list = []
-        self.recv_msg_list_tmp = []
-        self.recv_model_dict_tmp = {}
+        self.msg_list = []
+        self.recv_msg_tmp = {}
+
+    def add_msg(self, msg):
+        """
+        添加消息.
+        """
+        self.msg_list.append(msg)
+
+    def add_recv_msg(self, model_name, msg):
+        """
+        添加接收消息.
+        """
+        self.recv_msg_tmp[model_name] = msg
+
+    def sel_recv_msg(self, model_name):
+        """
+        选择接收消息.
+        """
+        self.msg_list.append(self.recv_msg_tmp[model_name])
+        self.recv_msg_tmp = {}
+
+    def __json__(self):
+        res = {'chat_id': self.chat_id,
+               'chat_title': self.chat_title, 'msg_list': self.msg_list}
+        if self.recv_msg_tmp:
+            res['recv_msg_tmp'] = self.recv_msg_tmp
+        return res
 
 
 class User:
     """
     存储用户信息.
     属性:
-        api_dict: 模型名-api_list中的序号, 用于查找
-        chat_dict: 会话id-chat_list中的序号, 用于查找
+        api_dict: 模型名-Api
+        chat_dict: 会话id-Chat
     """
 
     def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.api_list = []
-        self.apt_dict = {}
-        self.chat_list = []
+        self.api_dict = {}
         self.chat_dict = {}
 
     def add_chat(self, chat):
         """
         添加会话.
         """
-        self.chat_dict[chat.chat_id] = len(self.chat_list)
-        self.chat_list.append(chat)
+        self.chat_dict[chat.chat_id] = chat
+
+    def del_chat(self, chat_id):
+        """
+        删除会话.
+        """
+        del self.chat_dict[chat_id]
 
     def add_api(self, api):
         """
-        添加api.
+        添加/覆盖api.
         """
-        if api.model_name in self.api_dict:
-            self.api_list[self.api_dict[api.model_name]] = api
-            return
-        self.api_dict[api.model_name] = len(self.api_list)
-        self.api_list.append(api)
+        self.api_dict[api.model_name] = api
+
+    def del_api(self, model_name):
+        """
+        删除api.
+        """
+        del self.api_dict[model_name]
 
 
 class Sever:
     """
     服务器所需的一切信息.
     属性:
-        user_list: 用户列表
-        user_dict: 用户名-user_list中的序号, 用于查找
+        user_dict: 用户名-User
         session_dict: 用户名-session_id, 用于记录会话信息
     """
 
@@ -81,6 +133,42 @@ class Sever:
         """
         self.user_dict[user.username] = len(self.user_list)
         self.user_list.append(user)
+
+    def gen_chat_id(username):
+        """
+        生成chat_id.
+        """
+        txt = username + time.strftime('%Y_%m_%d_%H_%M_%S',
+                                       time.localtime()) + str(random.randint(0, 100))
+        cid = hashlib.md5(txt.encode('utf-8')).hexdigest()
+        return cid
+
+    def gen_session_id(self, username):
+        """
+        生成session_id.
+        """
+        txt = username + str(time.time())
+        sid = hashlib.md5(txt.encode('utf-8')).hexdigest()
+        return sid
+
+    def get_chat(user, cid) -> Chat:
+        """
+        获取chat.
+        """
+        chat_id = user.chat_dict.get(cid)
+        if chat_id is None:
+            return None
+        return user.chat_list[chat_id]
+
+    def get_user(self, uname, sid) -> User:
+        """
+        检查session_id.
+        """
+        if uname is None or sid is None:
+            return None
+        if self.session_dict.get(uname) == sid:
+            return self.user_list[self.user_dict[uname]]
+        return None
 
     def load(self, path):
         pass
