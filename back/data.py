@@ -11,11 +11,13 @@ class Api:
         self.model_name = name
         self.api_key = key
 
-    def get_response(self, send_msg):
+    def get_response(self, chat):
         """
         获取回复.
         """
-        return 'echo: model = %s, send = %s' % (self.model_name, send_msg)
+        msg_list = [m.__dict__() for m in chat.msg_list]
+        print(msg_list)
+        return '111'
 
     def __dict__(self):
         return {'model_name': self.model_name, 'api_key': self.api_key}

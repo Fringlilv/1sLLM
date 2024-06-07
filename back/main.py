@@ -153,7 +153,7 @@ def chat_gen():
         api = user.api_dict[model_name]
         recv_msg = data.Message(model_name, 'echo: unknown_model')
         if api is not None:
-            recv_msg.msg = api.get_response(prompt)
+            recv_msg.msg = api.get_response(chat)
         chat.add_recv_msg(model_name, recv_msg)
     return json.dumps(chat.recv_msg_tmp, default=lambda o: o.__dict__()), 200
 
@@ -172,13 +172,12 @@ def chat_regen():
     prompt = chat.recv_msg_list[-1].msg
     models = json.loads(base64.b64decode(
         request.args.get('ml')).decode('utf-8'))
-    chat
     # TODO: 生成答复并暂存
     for model_name in models:
         api = user.api_dict[model_name]
         recv_msg = data.Message(model_name, 'echo: unknown_model')
         if api is not None:
-            recv_msg.msg = api.get_response(prompt)
+            recv_msg.msg = api.get_response(chat)
         chat.add_recv_msg(model_name, recv_msg)
     return json.dumps(chat.recv_msg_tmp, default=lambda o: o.__dict__()), 200
 
