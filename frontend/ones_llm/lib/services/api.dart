@@ -1,7 +1,9 @@
-import 'dart:js_interop';
+import 'dart:convert';
+
 import 'package:crypto/crypto.dart';
-import 'package:dio/browser.dart';
 import 'package:dio/dio.dart';
+import 'package:dio/browser.dart' if (dart.library.io) 'package:ones_llm/crossPlatform/fakeDioBrowser.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:get/get.dart' hide Response;
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
@@ -27,11 +29,13 @@ class Message {
   String conversationId;
   Role role;
   String text;
+  String? modelName;
   Message(
       {this.id,
       required this.conversationId,
       required this.text,
-      required this.role});
+      required this.role,
+      this.modelName});
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -62,37 +66,42 @@ enum LoginResponse {
 
 class ApiService extends GetxService {
   late Dio _dio;
-  final baseUrl = 'localhost:56789';
+  final baseUrl = 'http://localhost:8000';
   String? loginUser;
 
   @override
   void onInit() async {
     super.onInit();
     _dio = Dio();
-    // var adapter = BrowserHttpClientAdapter(withCredentials: true);
-    // _dio.httpClientAdapter = adapter;
+    if (kIsWeb){
+      var adapter = BrowserHttpClientAdapter(withCredentials: true);
+      _dio.httpClientAdapter = adapter;
+    }
     _dio.options.baseUrl = baseUrl;
     _dio.options.connectTimeout = const Duration(milliseconds: 5000);
     _dio.options.receiveTimeout = const Duration(milliseconds: 3000);
+    _dio.options.headers["Accept"] = "application/json";
+    // _dio.options.headers["X-Requested-With"] = "XMLHttpRequest";
+    // _dio.options.headers["Access-Control-Allow-Origin"] = "*";
     _dio.interceptors.add(LogInterceptor(responseBody: true));
     _dio.interceptors.add(CookieManager(PersistCookieJar()));
   }
 
-  Future<Response<T>> _get<T>(String path,
+  Future<T> _get<T>(String path,
     {Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
     ProgressCallback? onReceiveProgress}
   ) async {
     try {
-      final response = await _dio.get<T>(
+      final response = await _dio.get<String>(
         path,
         queryParameters: queryParameters,
         options: options,
         cancelToken: cancelToken,
         onReceiveProgress: onReceiveProgress,
       );
-      return response;
+      return jsonDecode(response.data!) as T;
     } on DioException catch (_) {
       // 处理错误，例如自动重试
       rethrow;
@@ -130,7 +139,8 @@ class ApiService extends GetxService {
         '/login',
         queryParameters: {'user': username, 'pd': password}
       );
-      switch(response.data){
+      print(response);
+      switch(response){
         case 'success':
           loginUser = username;
           return LoginResponse.success;
@@ -163,18 +173,20 @@ class ApiService extends GetxService {
   }
 
   Future<List<Conversation>> getConversations() async {
-    List<Conversation> convList = [];
     try {
-      final response = await _get<Map<String, String>>(
+      final response = await _get<Map<String, dynamic>>(
         '/chat/list',
       );
-      response.data!.forEach((key, value) {
+      List<Conversation> convList = [];
+      response.forEach((key, value) {
         convList.add(Conversation(name: value, description: value, id: key));
       });
       return convList;
     } on DioException catch (_) {
       // 处理错误，例如自动重试
       rethrow;
+    } catch(e){
+      throw Exception(e);
     }
   }
 
@@ -183,84 +195,97 @@ class ApiService extends GetxService {
       final response = await _get<String>(
         '/chat/new',
       );
-      return response.data!;
+      return response;
     } on DioException catch (_) {
       // 处理错误，例如自动重试
       rethrow;
     }
   }
 
-  Future<List<Message>> renameConversation<T>(
-    uuid,
-    {required name,}
+  Future<bool> renameConversation(
+    conversationId,
+    newName
   ) async {
-    List<Message> message_list = [];
-    message_list.add(Message(conversationId: uuid, text: 'text', role: Role.user));
-    return message_list;
-    // try {
-    //   final response = await _dio.post<T>(
-    //     path,
-    //     data: data,
-    //     queryParameters: queryParameters,
-    //     options: options,
-    //     cancelToken: cancelToken,
-    //     onSendProgress: onSendProgress,
-    //     onReceiveProgress: onReceiveProgress,
-    //   );
-    //   return Conversation(name: name, description: description, uuid: uuid);
-    // } on DioException catch (_) {
-    //   // 处理错误，例如自动重试
-    //   rethrow;
-    // }
+    try {
+      final response = await _get<String>(
+        '/chat/title',
+        queryParameters: {'cid': conversationId, 'title': newName}
+      );
+      return true;
+    } on DioException catch (_) {
+      // 处理错误，例如自动重试
+      rethrow;
+    }
   }
 
-  Future<List<Message>> deleteConversation<T>(
-    uuid
+  Future<bool> deleteConversation(
+    conversationId
   ) async {
-    List<Message> message_list = [];
-    message_list.add(Message(conversationId: uuid, text: 'text', role: Role.user));
-    return message_list;
-    // try {
-    //   final response = await _dio.post<T>(
-    //     path,
-    //     data: data,
-    //     queryParameters: queryParameters,
-    //     options: options,
-    //     cancelToken: cancelToken,
-    //     onSendProgress: onSendProgress,
-    //     onReceiveProgress: onReceiveProgress,
-    //   );
-    //   return Conversation(name: name, description: description, uuid: uuid);
-    // } on DioException catch (_) {
-    //   // 处理错误，例如自动重试
-    //   rethrow;
-    // }
+    try {
+      final response = await _get<String>(
+        '/chat/del',
+        queryParameters: {'cid': conversationId}
+      );
+      return true;
+    } on DioException catch (_) {
+      // 处理错误，例如自动重试
+      rethrow;
+    }
   }
 
   Future<List<Message>> getMessages(
     conversationId,
   ) async {
-    List<Message> message_list = [];
-    message_list.add(Message(conversationId: conversationId, text: 'text', role: Role.user));
-    return message_list;
+    try {
+      final response = await _get<List<dynamic>>(
+        '/chat/get',
+        queryParameters: {'cid': conversationId}
+      );
+      List<Message> messageList = [];
+      var role = Role.system;
+      response.forEach((element) {
+        messageList.add(Message(conversationId: conversationId, text: element, role: role));
+        role = role == Role.user ? Role.system : Role.user;
+      });
+      return messageList;
+    } on DioException catch (_) {
+      rethrow;
+    }
   }
 
   Future<List<Message>> sendMessage(
-    id,
-    text,
+    String conversationId,
+    String text,
+    List<String> modelList,
   ) async {
-    List<Message> message_list = [];
-    message_list.add(Message(conversationId: id, text: 'text', role: Role.user));
-    return message_list;
+     try {
+      final response = await _get<Map<String, dynamic>>(
+        '/chat/gen',
+        queryParameters: {'cid': conversationId, 'p': base64Encode(utf8.encode(text)), 'ml': base64Encode(utf8.encode(jsonEncode(modelList)))}
+      );
+      List<Message> messageList = [];
+      response.forEach((key, value) {
+        messageList.add(Message(conversationId: conversationId, modelName: key, text: value, role: Role.assistant));
+      });
+      return messageList;
+    } on DioException catch (_) {
+      rethrow;
+    }
   }
 
   Future<bool> selectMessages(
-    text,
-    {required uuid,}
+    String conversationId,
+    String model,
   ) async {
-    List<Message> message_list = [];
-    message_list.add(Message(conversationId: uuid, text: 'text', role: Role.user));
-    return true;
+    try {
+      final response = await _get<Map<String, dynamic>>(
+        '/chat/sel',
+        queryParameters: {'cid': conversationId, 'name': base64Encode(utf8.encode(model))}
+      );
+      return true;
+    } on DioException catch (_) {
+      rethrow;
+    }
   }
 
 }

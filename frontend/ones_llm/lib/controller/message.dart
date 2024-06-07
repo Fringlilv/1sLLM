@@ -8,8 +8,8 @@ class MessageController extends GetxController {
   final newMessageList = <Message>[].obs;
   final ApiService api = Get.find();
 
-  void loadAllMessages(String conversationUUid) async {
-    messageList.value = await api.getMessages(conversationUUid);
+  void loadAllMessages(String conversationId) async {
+    messageList.value = await api.getMessages(conversationId);
   }
 
   void sendMessage(
@@ -20,8 +20,9 @@ class MessageController extends GetxController {
     final sendedMessage = Message(conversationId: conversationId, text: text, role: Role.user);
     messageList.value = [...messages, sendedMessage];
 
-    final newMessages = await api.sendMessage(conversationId, text);
+    final newMessages = await api.sendMessage(conversationId, text, ['model']);
     newMessageList.value = newMessages;
+    await api.selectMessages(conversationId, 'model');
     
     messageList.value = [...messages, sendedMessage, newMessages[0]];
   }

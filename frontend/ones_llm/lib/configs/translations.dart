@@ -4,7 +4,7 @@ class OnesLLMTranslations extends Translations {
   @override
   Map<String, Map<String, String>> get keys => {
         'en_US': {
-          "appTitle": "ChatGpt",
+          "appTitle": "1sLLM",
           "toSecondPage": "to second page",
           "secondPage": "this is the second Page",
           "countTimes": "current total count is:",
@@ -30,10 +30,13 @@ class OnesLLMTranslations extends Translations {
           "gptModel": "Select GPT Model",
           "llmHint": "Select LLM Model",
           "youCode": "please input your you code",
-          "youCodeTips": "yk-xxxx-xxxx-xxxx-xxxx"
+          "youCodeTips": "yk-xxxx-xxxx-xxxx-xxxx",
+          "username": "username",
+          "password": "password",
+          "login": "登录",
         },
         'zh_CN': {
-          "appTitle": "ChatBot",
+          "appTitle": "1sLLM",
           "toSecondPage": "去到第二页",
           "secondPage": "这里上第二页",
           "countTimes": "当前的数字是：",
@@ -59,7 +62,10 @@ class OnesLLMTranslations extends Translations {
           "gptModel": "选择 GPT Model",
           "llmHint": "选择大语言模型",
           "youCode": "请输入You邀请码",
-          "youCodeTips": "yk-xxxx-xxxx-xxxx-xxxx"
+          "youCodeTips": "yk-xxxx-xxxx-xxxx-xxxx",
+          "username": "用户名",
+          "password": "密码",
+          "login": "登录",
         }
       };
 }
