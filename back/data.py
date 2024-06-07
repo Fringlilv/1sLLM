@@ -11,13 +11,15 @@ class Api:
         self.model_name = name
         self.api_key = key
 
-    def get_response(self, send_msg):
+    def get_response(self, chat):
         """
         获取回复.
         """
-        return 'echo: model = %s, send = %s' % (self.model_name, send_msg)
+        msg_list = [m.__dict__() for m in chat.msg_list]
+        print(msg_list)
+        return '111'
 
-    def __json__(self):
+    def __dict__(self):
         return {'model_name': self.model_name, 'api_key': self.api_key}
 
 
@@ -30,7 +32,7 @@ class Message:
         self.role = role
         self.msg = msg
 
-    def __json__(self):
+    def __dict__(self):
         return {'role': self.role, 'msg': self.msg}
 
 
@@ -67,7 +69,7 @@ class Chat:
         self.msg_list.append(self.recv_msg_tmp[model_name])
         self.recv_msg_tmp = {}
 
-    def __json__(self):
+    def __dict__(self):
         res = {'chat_id': self.chat_id,
                'chat_title': self.chat_title, 'msg_list': self.msg_list}
         if self.recv_msg_tmp:
@@ -134,7 +136,7 @@ class Sever:
         self.user_dict[user.username] = len(self.user_list)
         self.user_list.append(user)
 
-    def gen_chat_id(username):
+    def gen_chat_id(self, username):
         """
         生成chat_id.
         """
@@ -151,14 +153,14 @@ class Sever:
         sid = hashlib.md5(txt.encode('utf-8')).hexdigest()
         return sid
 
-    def get_chat(user, cid) -> Chat:
+    def get_chat(self, user, cid) -> Chat:
         """
         获取chat.
         """
-        chat_id = user.chat_dict.get(cid)
-        if chat_id is None:
+        chat = user.chat_dict.get(cid)
+        if chat is None:
             return None
-        return user.chat_list[chat_id]
+        return chat
 
     def get_user(self, uname, sid) -> User:
         """
