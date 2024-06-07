@@ -81,7 +81,7 @@ def chat_list():
     user = server.get_user(session.get('username'), session.get('session_id'))
     if user is None:
         return json.dumps('invalid_user'), 403
-    return json.dumps(user.chat_dict), 200
+    return json.dumps(user.chat_dict, default=lambda o: o.__dict__()), 200
 
 
 @app.route('/chat/new')
@@ -111,7 +111,7 @@ def chat_get():
     chat = server.get_chat(user, request.args.get('cid'))
     if chat is None:
         return json.dumps('invalid_chat_id'), 403
-    return json.dumps(chat.__dict__()), 200
+    return json.dumps(chat, default=lambda o: o.__dict__()), 200
 
 
 @app.route('/chat/del')
@@ -147,7 +147,7 @@ def chat_gen():
     models = json.loads(base64.b64decode(
         request.args.get('ml')).decode('utf-8'))
     send_msg = data.Message(user.username, prompt)
-    chat
+    chat.add_msg(send_msg)
     # TODO: 生成答复并暂存
     for model_name in models:
         api = user.api_dict[model_name]
@@ -155,7 +155,7 @@ def chat_gen():
         if api is not None:
             recv_msg.msg = api.get_response(prompt)
         chat.add_recv_msg(model_name, recv_msg)
-    return json.dumps(chat.recv_msg_tmp.__dict__()), 200
+    return json.dumps(chat.recv_msg_tmp, default=lambda o: o.__dict__()), 200
 
 
 @app.route('/chat/regen')
@@ -180,7 +180,7 @@ def chat_regen():
         if api is not None:
             recv_msg.msg = api.get_response(prompt)
         chat.add_recv_msg(model_name, recv_msg)
-    return json.dumps(chat.recv_msg_tmp.__dict__()), 200
+    return json.dumps(chat.recv_msg_tmp, default=lambda o: o.__dict__()), 200
 
 
 @app.route('/chat/sel')
