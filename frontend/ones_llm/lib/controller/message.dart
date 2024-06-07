@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:ones_llm/controller/user.dart';
 
 import 'package:ones_llm/services/api.dart';
 
@@ -17,7 +18,7 @@ class MessageController extends GetxController {
     String text
   ) async {
     final messages = await api.getMessages(conversationId);
-    final sendedMessage = Message(conversationId: conversationId, text: text, role: Role.user);
+    final sendedMessage = Message(conversationId: conversationId, text: text, role: Get.find<UserController>().userName.value);
     messageList.value = [...messages, sendedMessage];
 
     final newMessages = await api.sendMessage(conversationId, text, ['model']);

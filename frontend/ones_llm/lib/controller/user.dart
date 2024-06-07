@@ -45,5 +45,6 @@ class UserController extends GetxController {
   void logout() async {
     statu.value = LoginStatu.notLogin;
     final res = await api.logout();
+    
   }
 }

@@ -32,8 +32,8 @@ class MyApp extends StatelessWidget {
       getPages: routes,
       unknownRoute:
           GetPage(name: '/', page: () => MyHomePage()),
-      theme: FlexThemeData.light(scheme: FlexScheme.ebonyClay),
-      darkTheme: FlexThemeData.dark(scheme: FlexScheme.ebonyClay),
+      theme: FlexThemeData.light(scheme: FlexScheme.blueWhale),
+      darkTheme: FlexThemeData.dark(scheme: FlexScheme.blueWhale),
       themeMode: ThemeMode.system,
       locale: const Locale('zh'),
       translations: OnesLLMTranslations(),

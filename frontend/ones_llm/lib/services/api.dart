@@ -27,7 +27,7 @@ class Conversation {
 class Message {
   int? id;
   String conversationId;
-  Role role;
+  String role;
   String text;
   String? modelName;
   Message(
@@ -40,7 +40,7 @@ class Message {
     return {
       'id': id,
       'uuid': conversationId,
-      'role': role.index,
+      'role': role,
       'text': text,
     };
   }
@@ -49,12 +49,6 @@ class Message {
   String toString() {
     return 'Message{id: $id, conversationId: $conversationId, role: $role, text: $text}';
   }
-}
-
-enum Role {
-  system,
-  user,
-  assistant,
 }
 
 enum LoginResponse {
@@ -177,7 +171,7 @@ class ApiService extends GetxService {
       );
       List<Conversation> convList = [];
       response.forEach((key, value) {
-        convList.add(Conversation(name: value, description: value, id: key));
+        convList.add(Conversation(name: value['chat_title'], description: value['chat_title'], id: key));
       });
       return convList;
     } on DioException catch (_) {
@@ -261,7 +255,7 @@ class ApiService extends GetxService {
       );
       List<Message> messageList = [];
       response.forEach((key, value) {
-        messageList.add(Message(conversationId: conversationId, modelName: key, text: value, role: Role.assistant));
+        messageList.add(Message(conversationId: conversationId, modelName: key, text: value['msg'], role: value['role']));
       });
       return messageList;
     } on DioException catch (_) {
@@ -274,7 +268,7 @@ class ApiService extends GetxService {
     String model,
   ) async {
     try {
-      final response = await _get<Map<String, dynamic>>(
+      final response = await _get<String>(
         '/chat/sel',
         queryParameters: {'cid': conversationId, 'name': base64Encode(utf8.encode(model))}
       );

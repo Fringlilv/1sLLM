@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:ones_llm/controller/user.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:ones_llm/components/markdown.dart';
@@ -139,19 +141,20 @@ class _ChatWindowState extends State<ChatWindow> {
   }
 
   Widget _buildMessageCard(Message message) {
-    if (message.role == Role.user) {
+    final userName = Get.find<UserController>().userName.value;
+    if (message.role == userName) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              FaIcon(FontAwesomeIcons.person),
-              SizedBox(
+              const FaIcon(FontAwesomeIcons.person),
+              const SizedBox(
                 width: 5,
               ),
-              Text("User"),
-              SizedBox(
+              Text(userName),
+              const SizedBox(
                 width: 10,
               )
             ],
@@ -194,7 +197,7 @@ class _ChatWindowState extends State<ChatWindow> {
               const SizedBox(
                 width: 5,
               ),
-              Text(message.role == Role.system ? "System" : "assistant"),
+              Text(message.role),
             ],
           ),
           Row(
