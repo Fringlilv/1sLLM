@@ -28,7 +28,7 @@ class ConversationController extends GetxController {
   }
 
   void renameConversation(Conversation conversation) async {
-    await api.renameConversation(conversation.id, name: conversation.name);
+    await api.renameConversation(conversation.id, conversation.name);
     conversationList.value = await api.getConversations();
     update();
   }

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/controller/message.dart';
+import 'package:ones_llm/controller/user.dart';
 // import 'package:flutter_chatgpt/controller/settings.dart';
 import 'package:ones_llm/services/api.dart';
 
@@ -101,8 +102,10 @@ class ConversationWindow extends StatelessWidget {
                   ),
                   TextButton.icon(
                     onPressed: () {
-                      closeDrawer();
-                      Get.toNamed('/setting');
+                      UserController u = Get.find();
+                      u.login('admin', 'admin');
+                      // closeDrawer();
+                      // Get.toNamed('/setting');
                     },
                     label: Text('settings'.tr),
                     icon: const Icon(Icons.settings),

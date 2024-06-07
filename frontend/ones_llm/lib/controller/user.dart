@@ -12,7 +12,13 @@ enum LoginStatu {
 class UserController extends GetxController {
   final statu = LoginStatu.notLogin.obs;
   final failmessage = ''.obs;
-  final api = ApiService();
+  final ApiService api = Get.find();
+
+  @override
+  void onInit() async {
+    super.onInit();
+    login('admin', 'admin');
+  }
 
   void login(String username, String password) async {
     statu.value = LoginStatu.tryingLogin;
