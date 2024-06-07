@@ -93,6 +93,7 @@ def chat_new():
     if user is None:
         return json.dumps('invalid_user'), 403
     # 生成chat_id
+    print(user.username)
     cid = server.gen_chat_id(user.username)
     chat = data.Chat(cid, '无标题的聊天')
     user.add_chat(chat)
@@ -107,10 +108,10 @@ def chat_get():
     user = server.get_user(session.get('username'), session.get('session_id'))
     if user is None:
         return json.dumps('invalid_user'), 403
-    chat = server.server.get_chat(user, request.args.get('cid'))
+    chat = server.get_chat(user, request.args.get('cid'))
     if chat is None:
         return json.dumps('invalid_chat_id'), 403
-    return json.dumps(chat), 200
+    return json.dumps(chat.__dict__()), 200
 
 
 @app.route('/chat/del')
@@ -154,7 +155,7 @@ def chat_gen():
         if api is not None:
             recv_msg.msg = api.get_response(prompt)
         chat.add_recv_msg(model_name, recv_msg)
-    return json.dumps(chat.recv_msg_tmp), 200
+    return json.dumps(chat.recv_msg_tmp.__dict__()), 200
 
 
 @app.route('/chat/regen')
@@ -179,7 +180,7 @@ def chat_regen():
         if api is not None:
             recv_msg.msg = api.get_response(prompt)
         chat.add_recv_msg(model_name, recv_msg)
-    return json.dumps(chat.recv_msg_tmp), 200
+    return json.dumps(chat.recv_msg_tmp.__dict__()), 200
 
 
 @app.route('/chat/sel')
@@ -203,7 +204,7 @@ def chat_sel():
 if __name__ == '__main__':
     # admin配置
     admin = data.User('admin', '123456')
-    api1 = data.Api('gpt2', '123456')
+    api1 = data.Api('model', '123456')
     admin.add_api(api1)
     server.add_user(admin)
     # 启动服务器
