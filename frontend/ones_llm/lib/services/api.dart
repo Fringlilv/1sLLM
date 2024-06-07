@@ -67,7 +67,6 @@ enum LoginResponse {
 class ApiService extends GetxService {
   late Dio _dio;
   final baseUrl = 'http://localhost:8000';
-  String? loginUser;
 
   @override
   void onInit() async {
@@ -142,7 +141,6 @@ class ApiService extends GetxService {
       print(response);
       switch(response){
         case 'success':
-          loginUser = username;
           return LoginResponse.success;
         default:
           return LoginResponse.unknown;
@@ -237,15 +235,13 @@ class ApiService extends GetxService {
     conversationId,
   ) async {
     try {
-      final response = await _get<List<dynamic>>(
+      final response = await _get<Map<String, dynamic>>(
         '/chat/get',
         queryParameters: {'cid': conversationId}
       );
       List<Message> messageList = [];
-      var role = Role.system;
-      response.forEach((element) {
-        messageList.add(Message(conversationId: conversationId, text: element, role: role));
-        role = role == Role.user ? Role.system : Role.user;
+      response['msg_list'].forEach((element) {
+        messageList.add(Message(conversationId: conversationId, text: element['msg'], role: element['role']));
       });
       return messageList;
     } on DioException catch (_) {

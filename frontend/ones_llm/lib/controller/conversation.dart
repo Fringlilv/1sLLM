@@ -9,10 +9,14 @@ class ConversationController extends GetxController {
   final currentConversationUuid = "".obs;
 
   static ConversationController get to => Get.find();
-  @override
-  void onInit() async {
+  // @override
+  // void onInit() async {
+  //   conversationList.value = await api.getConversations();
+  //   super.onInit();
+  // }
+
+  void getConversations() async {
     conversationList.value = await api.getConversations();
-    super.onInit();
   }
 
   void setCurrentConversationId(String id) async {

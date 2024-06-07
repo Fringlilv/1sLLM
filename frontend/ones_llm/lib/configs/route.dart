@@ -5,7 +5,8 @@ import 'package:ones_llm/pages/login.dart';
 
 
 final routes = [
-  GetPage(name: '/', page: () => MyHomePage()),
+  GetPage(name: '/', page: () => LoginPage()),
+  GetPage(name: '/home', page: () => MyHomePage()),
   GetPage(name: '/login', page: () => LoginPage()),
   // GetPage(name: '/second', page: () => const SecondPage()),
   // GetPage(name: '/setting', page: () => SettingPage())

@@ -102,8 +102,6 @@ class ConversationWindow extends StatelessWidget {
                   ),
                   TextButton.icon(
                     onPressed: () {
-                      UserController u = Get.find();
-                      u.login('admin', 'admin');
                       // closeDrawer();
                       // Get.toNamed('/setting');
                     },
