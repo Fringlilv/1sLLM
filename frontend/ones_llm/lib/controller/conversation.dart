@@ -6,17 +6,21 @@ class ConversationController extends GetxController {
   final conversationList = <Conversation>[].obs;
   final ApiService api = Get.find();
 
-  final currentConversationUuid = "".obs;
+  final currentConversationId = "".obs;
 
   static ConversationController get to => Get.find();
-  @override
-  void onInit() async {
+  // @override
+  // void onInit() async {
+  //   conversationList.value = await api.getConversations();
+  //   super.onInit();
+  // }
+
+  void getConversations() async {
     conversationList.value = await api.getConversations();
-    super.onInit();
   }
 
-  void setCurrentConversationId(String id) async {
-    currentConversationUuid.value = id;
+  void setCurrentConversationId(String id) {
+    currentConversationId.value = id;
     update();
   }
 
@@ -40,9 +44,10 @@ class ConversationController extends GetxController {
       description: description, 
       id: id)
     );
+    currentConversationId.value = id;
+    update();
     conversationList.value = await api.getConversations();
     update();
-    print(conversationList);
     return id;
   }
 }

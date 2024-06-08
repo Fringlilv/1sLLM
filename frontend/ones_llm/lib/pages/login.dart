@@ -11,7 +11,7 @@ class LoginPage extends GetResponsiveView {
     print('phone');
     return Scaffold(
       appBar: AppBar(
-        title: Text('appTitle'.tr),
+        title: Text('login'.tr),
       ),
       body: const LoginWindow(),
     );
@@ -20,8 +20,11 @@ class LoginPage extends GetResponsiveView {
   @override
   Widget? desktop() {
     print('desktop');
-    return const Scaffold(
-      body: LoginWindow(),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('login'.tr),
+      ),
+      body: const LoginWindow(),
     );
   }
 }

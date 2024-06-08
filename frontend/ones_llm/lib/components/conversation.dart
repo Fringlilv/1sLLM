@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/controller/message.dart';
-import 'package:ones_llm/controller/user.dart';
+// import 'package:ones_llm/controller/user.dart';
 // import 'package:flutter_chatgpt/controller/settings.dart';
 import 'package:ones_llm/services/api.dart';
 
@@ -14,7 +14,7 @@ class ConversationWindow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.background,
+          color: Theme.of(context).colorScheme.primaryContainer.withAlpha(150),
           border: const Border(right: BorderSide(width: .1))),
       constraints: const BoxConstraints(maxWidth: 300),
       child: GetX<ConversationController>(builder: (controller) {
@@ -39,22 +39,25 @@ class ConversationWindow extends StatelessWidget {
                       itemBuilder: (context, index) {
                         return Card(
                           elevation: 1,
-                          child: ListTile(
+                          color: Theme.of(context).colorScheme.background.withAlpha(235),
+                          child: Obx(() => ListTile(
+                            tileColor: Theme.of(context).colorScheme.primaryContainer.withAlpha(70),
+                            // selectedColor: Theme.of(context).colorScheme.primaryContainer.withAlpha(20),
                             onTap: () {
                               _tapConversation(index);
                             },
                             selected:
-                                controller.currentConversationUuid.value ==
+                                controller.currentConversationId.value ==
                                     controller.conversationList[index].id,
                             leading: Icon(
                               Icons.chat,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: Theme.of(context).colorScheme.primaryContainer.withAlpha(200),
                             ),
                             title: Text(
                               controller.conversationList[index].name,
                               style: TextStyle(
                                   fontSize: 13,
-                                  color: Theme.of(context).colorScheme.primary),
+                                  color: Theme.of(context).colorScheme.onPrimaryContainer),
                             ),
                             trailing: Builder(builder: (context) {
                               return IconButton(
@@ -65,10 +68,10 @@ class ConversationWindow extends StatelessWidget {
                                   icon: Icon(
                                     Icons.more_horiz,
                                     color:
-                                        Theme.of(context).colorScheme.primary,
+                                        Theme.of(context).colorScheme.onPrimaryContainer,
                                   ));
                             }),
-                          ),
+                          ),),
                         );
                       },
                     ),
@@ -80,6 +83,7 @@ class ConversationWindow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextButton.icon(
+                    style: ButtonStyle(foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onPrimaryContainer)),
                     onPressed: () {
                       onTapNewConversation();
                       closeDrawer();
@@ -101,11 +105,10 @@ class ConversationWindow extends StatelessWidget {
                     height: 6,
                   ),
                   TextButton.icon(
+                    style: ButtonStyle(foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onPrimaryContainer)),
                     onPressed: () {
-                      UserController u = Get.find();
-                      u.login('admin', 'admin');
-                      // closeDrawer();
-                      // Get.toNamed('/setting');
+                      closeDrawer();
+                      Get.toNamed('/setting');
                     },
                     label: Text('settings'.tr),
                     icon: const Icon(Icons.settings),
@@ -158,7 +161,7 @@ class ConversationWindow extends StatelessWidget {
     ConversationController controller = Get.find();
     controller.setCurrentConversationId("");
     MessageController messageController = Get.find();
-    messageController.loadAllMessages("");
+    messageController.clearMessages();
   }
 
   void _renameConversation(BuildContext context, int index) {
@@ -219,10 +222,11 @@ class ConversationWindow extends StatelessWidget {
   _tapConversation(int index) {
     ConversationController controller = Get.find();
     closeDrawer();
-    String conversationUUid = controller.conversationList[index].id;
-    controller.currentConversationUuid(conversationUUid);
+    String conversationId = controller.conversationList[index].id;
+    controller.setCurrentConversationId(conversationId);
     MessageController controllerMessage = Get.find();
-    controllerMessage.loadAllMessages(conversationUUid);
+    controllerMessage.loadAllMessages(conversationId);
+    
   }
 
   void closeDrawer() {
