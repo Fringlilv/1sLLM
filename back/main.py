@@ -5,7 +5,7 @@ import random
 import time
 
 import data
-from flask import Flask, request, session
+from flask import Flask, request, session, redirect
 from flask_cors import CORS
 
 
@@ -13,6 +13,12 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True)
 server = data.Sever()
 
+@app.route('/')
+def index():
+    """
+    主页.
+    """
+    return redirect('/static/index.html')
 
 @app.route('/login')
 def login():
@@ -51,10 +57,9 @@ def api_add():
     user = server.get_user(session.get('username'), session.get('session_id'))
     if user is None:
         return json.dumps('invalid_user'), 403
-    model_name = base64.b64decode(request.args.get('name')).decode('utf-8')
+    service_provider_name = base64.b64decode(request.args.get('name')).decode('utf-8')
     api_key = base64.b64decode(request.args.get('key')).decode('utf-8')
-    api = data.Api(model_name, api_key)
-    user.add_api(api)
+    user.add_api(service_provider_name, api_key)
     return json.dumps('success'), 200
 
 
@@ -146,15 +151,27 @@ def chat_gen():
         prompt = chat.recv_msg_list[-1].msg
     models = json.loads(base64.b64decode(
         request.args.get('ml')).decode('utf-8'))
-    send_msg = data.Message(user.username, prompt)
+    send_msg = data.Message('system', prompt)
     chat.add_msg(send_msg)
     # TODO: 生成答复并暂存
-    for model_name in models:
-        api = user.api_dict[model_name]
-        recv_msg = data.Message(model_name, 'echo: unknown_model')
-        if api is not None:
-            recv_msg.msg = api.get_response(chat)
-        chat.add_recv_msg(model_name, recv_msg)
+    # for model_name in models:
+    #     api = user.api_dict[model_name]
+    #     recv_msg = data.Message(model_name, 'echo: unknown_model')
+    #     if api is not None:
+    #         recv_msg.msg = api.get_response(chat)
+    #     chat.add_recv_msg(model_name, recv_msg)
+    # return json.dumps(chat.recv_msg_tmp, default=lambda o: o.__dict__()), 200
+    
+    for service_provider_name in user.api_dict:
+        api_key = user.api_dict[service_provider_name]
+        model_list = set(user.available_models[service_provider_name]) & set(models)
+        if model_list:
+            api = eval(f"data.{service_provider_name}_Api")(api_key)
+            responses = api.get_responses(chat, model_list)
+            print(responses)
+            for model_id in responses:
+                recv_msg = data.Message(model_id, responses[model_id])
+                chat.add_recv_msg(service_provider_name, recv_msg)
     return json.dumps(chat.recv_msg_tmp, default=lambda o: o.__dict__()), 200
 
 
@@ -203,8 +220,7 @@ def chat_sel():
 if __name__ == '__main__':
     # admin配置
     admin = data.User('admin', '123456')
-    api1 = data.Api('model', '123456')
-    admin.add_api(api1)
+    admin.add_api('OpenAI_agent', 'sk-ux7KAUS9M4FT38beJxfAq0G5W0XMHhshm9txd2ULG4UAKgOV')
     server.add_user(admin)
     # 启动服务器
     app.secret_key = '123456'

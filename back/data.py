@@ -1,27 +1,7 @@
 import hashlib
 import random
 import time
-
-class Api:
-    """
-    存储api信息的基类.
-    """
-
-    def __init__(self, name, key):
-        self.model_name = name
-        self.api_key = key
-
-    def get_response(self, chat):
-        """
-        获取回复.
-        """
-        msg_list = [m.__dict__() for m in chat.msg_list]
-        print(msg_list)
-        return '111'
-
-    def __dict__(self):
-        return {'model_name': self.model_name, 'api_key': self.api_key}
-
+from api import *
 
 class Message:
     """
@@ -33,7 +13,7 @@ class Message:
         self.msg = msg
 
     def __dict__(self):
-        return {'role': self.role, 'msg': self.msg}
+        return {'role': self.role, 'content': self.msg}
 
 
 class Chat:
@@ -81,8 +61,9 @@ class User:
     """
     存储用户信息.
     属性:
-        api_dict: 模型名-Api
+        api_dict: 服务商名-Api
         chat_dict: 会话id-Chat
+        available_models: 可用模型 
     """
 
     def __init__(self, username, password):
@@ -90,6 +71,7 @@ class User:
         self.password = password
         self.api_dict = {}
         self.chat_dict = {}
+        self.available_models = {}
 
     def add_chat(self, chat):
         """
@@ -103,17 +85,18 @@ class User:
         """
         del self.chat_dict[chat_id]
 
-    def add_api(self, api):
+    def add_api(self, service_provider_name, api_key):
         """
         添加/覆盖api.
         """
-        self.api_dict[api.model_name] = api
+        self.api_dict[service_provider_name] = api_key
+        self.available_models[service_provider_name] = eval(f"{service_provider_name}_Api")(api_key).supported_models
 
-    def del_api(self, model_name):
+    def del_api(self, service_provider_name):
         """
         删除api.
         """
-        del self.api_dict[model_name]
+        del self.api_dict[service_provider_name]
 
 
 class Sever:
