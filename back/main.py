@@ -71,10 +71,10 @@ def api_del():
     user = server.get_user(session.get('username'), session.get('session_id'))
     if user is None:
         return json.dumps('invalid_user'), 403
-    model_name = base64.b64decode(request.args.get('name')).decode('utf-8')
-    if model_name not in user.api_dict:
-        return json.dumps('invalid_model_name'), 403
-    user.del_api(model_name)
+    service_provider_name = base64.b64decode(request.args.get('name')).decode('utf-8')
+    if service_provider_name not in user.api_dict:
+        return json.dumps('invalid_service_provider_name'), 403
+    user.del_api(service_provider_name)
     return json.dumps('success'), 200
 
 
@@ -151,7 +151,7 @@ def chat_gen():
         prompt = chat.recv_msg_list[-1].msg
     models = json.loads(base64.b64decode(
         request.args.get('ml')).decode('utf-8'))
-    send_msg = data.Message('system', prompt)
+    send_msg = data.Message('user', prompt)
     chat.add_msg(send_msg)
     # TODO: 生成答复并暂存
     # for model_name in models:
@@ -171,7 +171,7 @@ def chat_gen():
             print(responses)
             for model_id in responses:
                 recv_msg = data.Message(model_id, responses[model_id])
-                chat.add_recv_msg(service_provider_name, recv_msg)
+                chat.add_recv_msg(model_id, recv_msg)
     return json.dumps(chat.recv_msg_tmp, default=lambda o: o.__dict__()), 200
 
 

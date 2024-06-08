@@ -51,9 +51,9 @@ class Api(metaclass=LockAndSubclassTrackingMeta):
         return supported_service_providers
     
     def get_responses(self, chat, model_list):
-        res = {}
+        res = []
         for model_id in model_list:
-            res[model_id] = self._get_response(chat, model_id)
+            res.extend(self._get_response(chat, model_id))
         return res
     
     def _list_models(self):
@@ -88,7 +88,6 @@ class OpenAI_agent_Api(Api):
     
     def _get_response(self, chat, model_id):
         msg_list = [msg.__dict__() for msg in chat.msg_list]
-        print(msg_list)
         payload = json.dumps({
             "model": model_id,
             "messages": msg_list
