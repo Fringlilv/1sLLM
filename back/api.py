@@ -53,7 +53,7 @@ class Api(metaclass=LockAndSubclassTrackingMeta):
     def get_responses(self, chat, model_list):
         res = []
         for model_id in model_list:
-            res.extend(self._get_response(chat, model_id))
+            res.append(self._get_response(chat, model_id))
         return res
     
     def _list_models(self):
@@ -87,7 +87,7 @@ class OpenAI_agent_Api(Api):
         return data
     
     def _get_response(self, chat, model_id):
-        msg_list = [msg.__dict__() for msg in chat.msg_list]
+        msg_list = [msg.to_role_dict() for msg in chat.msg_list]
         payload = json.dumps({
             "model": model_id,
             "messages": msg_list
@@ -101,6 +101,7 @@ class OpenAI_agent_Api(Api):
         res = self.conn.getresponse()
         data = res.read().decode("utf-8")
         data = json.loads(data)
+        print(data)
         data = data['choices'][0]['message']['content']
 
         return data

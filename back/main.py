@@ -151,7 +151,7 @@ def chat_gen():
         prompt = chat.recv_msg_list[-1].msg
     models = json.loads(base64.b64decode(
         request.args.get('ml')).decode('utf-8'))
-    send_msg = data.Message('user', prompt)
+    send_msg = data.Message('user', user.username, prompt)
     chat.add_msg(send_msg)
     # TODO: 生成答复并暂存
     # for model_name in models:
@@ -169,9 +169,9 @@ def chat_gen():
             api = eval(f"data.{service_provider_name}_Api")(api_key)
             responses = api.get_responses(chat, model_list)
             print(responses)
-            for model_id in responses:
-                recv_msg = data.Message(model_id, responses[model_id])
-                chat.add_recv_msg(model_id, recv_msg)
+            for idx, model in enumerate(model_list):
+                recv_msg = data.Message('assistant', model, responses[idx])
+                chat.add_recv_msg(model, recv_msg)
     return json.dumps(chat.recv_msg_tmp, default=lambda o: o.__dict__()), 200
 
 
@@ -192,7 +192,7 @@ def chat_regen():
     # TODO: 生成答复并暂存
     for model_name in models:
         api = user.api_dict[model_name]
-        recv_msg = data.Message(model_name, 'echo: unknown_model')
+        recv_msg = data.Message('assistant', model_name, 'echo: unknown_model')
         if api is not None:
             recv_msg.msg = api.get_response(chat)
         chat.add_recv_msg(model_name, recv_msg)
