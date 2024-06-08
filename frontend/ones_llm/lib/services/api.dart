@@ -71,8 +71,8 @@ class ApiService extends GetxService {
       _dio.httpClientAdapter = adapter;
     }
     _dio.options.baseUrl = baseUrl;
-    _dio.options.connectTimeout = const Duration(milliseconds: 5000);
-    _dio.options.receiveTimeout = const Duration(milliseconds: 3000);
+    _dio.options.connectTimeout = const Duration(milliseconds: 10000);
+    _dio.options.receiveTimeout = const Duration(milliseconds: 10000);
     _dio.options.headers["Accept"] = "application/json";
     // _dio.options.headers["X-Requested-With"] = "XMLHttpRequest";
     // _dio.options.headers["Access-Control-Allow-Origin"] = "*";
@@ -164,6 +164,22 @@ class ApiService extends GetxService {
     // }
   }
 
+  Future<List<String>> getModelList() async {
+    try {
+      // final response = await _get<Map<String, dynamic>>(
+      //   '/chat/list',
+      // );
+      // List<Conversation> convList = [];
+      // response.forEach((key, value) {
+      //   convList.add(Conversation(name: value['chat_title'], description: value['chat_title'], id: key));
+      // });
+      return ['gpt-3.5-turbo-ca'];
+    } on DioException catch (_) {
+      // 处理错误，例如自动重试
+      rethrow;
+    }
+  }
+
   Future<List<Conversation>> getConversations() async {
     try {
       final response = await _get<Map<String, dynamic>>(
@@ -177,8 +193,6 @@ class ApiService extends GetxService {
     } on DioException catch (_) {
       // 处理错误，例如自动重试
       rethrow;
-    } catch(e){
-      throw Exception(e);
     }
   }
 
@@ -225,7 +239,7 @@ class ApiService extends GetxService {
     }
   }
 
-  Future<List<Message>> getMessages(
+  Future<Map<String, List<Message>>> getMessages(
     conversationId,
   ) async {
     try {
@@ -235,9 +249,15 @@ class ApiService extends GetxService {
       );
       List<Message> messageList = [];
       response['msg_list'].forEach((element) {
-        messageList.add(Message(conversationId: conversationId, text: element['msg'], role: element['role']));
+        messageList.add(Message(conversationId: conversationId, text: element['content'], role: element['role']));
       });
-      return messageList;
+      List<Message> tempMessageList = [];
+      if (response['recv_msg_tmp'] is Map) {
+        response['recv_msg_tmp'].forEach((k, v) {
+          tempMessageList.add(Message(conversationId: conversationId, text: v['content'], role: v['role']));
+        });
+      }
+      return {"msgList": messageList, "tmpList": tempMessageList};
     } on DioException catch (_) {
       rethrow;
     }
@@ -255,7 +275,7 @@ class ApiService extends GetxService {
       );
       List<Message> messageList = [];
       response.forEach((key, value) {
-        messageList.add(Message(conversationId: conversationId, modelName: key, text: value['msg'], role: value['role']));
+        messageList.add(Message(conversationId: conversationId, modelName: key, text: value['content'], role: value['role']));
       });
       return messageList;
     } on DioException catch (_) {

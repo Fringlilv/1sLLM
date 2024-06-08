@@ -8,6 +8,7 @@ import 'package:ones_llm/configs/route.dart';
 import 'package:ones_llm/configs/translations.dart';
 import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/controller/message.dart';
+import 'package:ones_llm/controller/setting.dart';
 import 'package:ones_llm/controller/user.dart';
 import 'package:ones_llm/pages/home.dart';
 import 'package:ones_llm/services/api.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     Get.put(ApiService());
     Get.put(UserController());
+    Get.put(SettingController());
     Get.put(ConversationController());
     Get.put(MessageController());
     return GetMaterialApp(
@@ -32,8 +34,8 @@ class MyApp extends StatelessWidget {
       getPages: routes,
       unknownRoute:
           GetPage(name: '/', page: () => MyHomePage()),
-      theme: FlexThemeData.light(scheme: FlexScheme.blueWhale),
-      darkTheme: FlexThemeData.dark(scheme: FlexScheme.blueWhale),
+      theme: FlexThemeData.light(scheme: FlexScheme.jungle),
+      darkTheme: FlexThemeData.dark(scheme: FlexScheme.brandBlue),
       themeMode: ThemeMode.system,
       locale: const Locale('zh'),
       translations: OnesLLMTranslations(),

@@ -33,7 +33,9 @@ class OnesLLMTranslations extends Translations {
           "youCodeTips": "yk-xxxx-xxxx-xxxx-xxxx",
           "username": "username",
           "password": "password",
-          "login": "登录",
+          "login": "login",
+          "selectResponse": "select",
+          "emptyChat": "Send message to start new chat",
         },
         'zh_CN': {
           "appTitle": "1sLLM",
@@ -66,6 +68,8 @@ class OnesLLMTranslations extends Translations {
           "username": "用户名",
           "password": "密码",
           "login": "登录",
+          "selectResponse": "选择该回复",
+          "emptyChat": "发送信息以创建新对话",
         }
       };
 }
