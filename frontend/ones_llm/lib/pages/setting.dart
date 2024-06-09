@@ -21,7 +21,7 @@ class SettingPage extends GetResponsiveView<SettingController> {
                   style: const TextStyle(fontWeight: FontWeight.bold)),
             ),
             RadioListTile(
-              title: const Text('跟随系统'),
+              title: Text('followSystem'.tr),
               value: ThemeMode.system,
               groupValue: controller.themeMode.value,
               onChanged: (value) {
@@ -29,7 +29,7 @@ class SettingPage extends GetResponsiveView<SettingController> {
               },
             ),
             RadioListTile(
-              title: const Text('暗黑模式'),
+              title: Text('darkMode'.tr),
               value: ThemeMode.dark,
               groupValue: controller.themeMode.value,
               onChanged: (value) {
@@ -37,7 +37,7 @@ class SettingPage extends GetResponsiveView<SettingController> {
               },
             ),
             RadioListTile(
-              title: const Text('白色模式'),
+              title: Text('whiteMode'.tr),
               value: ThemeMode.light,
               groupValue: controller.themeMode.value,
               onChanged: (value) {
@@ -51,7 +51,7 @@ class SettingPage extends GetResponsiveView<SettingController> {
                   style: const TextStyle(fontWeight: FontWeight.bold)),
             ),
             RadioListTile(
-              title: const Text('中文'),
+              title: Text('zh'.tr),
               value: 'zh',
               groupValue: controller.locale.value.languageCode,
               onChanged: (value) {
@@ -59,7 +59,7 @@ class SettingPage extends GetResponsiveView<SettingController> {
               },
             ),
             RadioListTile(
-              title: const Text('英文'),
+              title: Text('en'.tr),
               value: 'en',
               groupValue: controller.locale.value.languageCode,
               onChanged: (value) {

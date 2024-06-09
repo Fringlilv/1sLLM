@@ -36,6 +36,11 @@ class OnesLLMTranslations extends Translations {
           "login": "login",
           "selectResponse": "select",
           "emptyChat": "Send message to start new chat",
+          "zh": "Chinese",
+          "en": "English",
+          "followSystem": "follow system",
+          "whiteMode": "white mode",
+          "darkMode": "dart mode"
         },
         'zh_CN': {
           "appTitle": "1sLLM",
@@ -70,6 +75,11 @@ class OnesLLMTranslations extends Translations {
           "login": "登录",
           "selectResponse": "选择该回复",
           "emptyChat": "发送信息以创建新对话",
+          "zh": "中文",
+          "en": "英文",
+          "followSystem": "跟随系统",
+          "whiteMode": "白色模式",
+          "darkMode": "暗黑模式"
         }
       };
 }
