@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:ones_llm/controller/user.dart';
+import 'package:ones_llm/components/chat/select_card.dart';
 
+import 'package:ones_llm/controller/model.dart';
+import 'package:ones_llm/controller/user.dart';
 import 'package:ones_llm/components/markdown.dart';
+import 'package:ones_llm/components/chat/message_card.dart';
 import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/controller/message.dart';
 // import 'package:flutter_chatgpt/controller/settings.dart';
@@ -26,108 +30,120 @@ class _ChatWindowState extends State<ChatWindow> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      constraints: const BoxConstraints(maxWidth: double.infinity),
       padding: const EdgeInsets.all(16),
       color: Theme.of(context).colorScheme.secondaryContainer.withAlpha(20),
-      child: Column(
-        children: [
-          Expanded(
-            child: GetX<MessageController>(
-              builder: (controller) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _scrollToNewMessage();
-                });
-                if (controller.messageList.isNotEmpty) {
-                  return ListView.builder(
-                    controller: _scrollController,
-                    itemCount: controller.messageList.length +
-                        controller.selectingMessageList.length,
-                    itemBuilder: (context, index) {
-                      final msgLen = controller.messageList.length;
-                      if (index < msgLen) {
-                        return _buildMessageCard(controller.messageList[index]);
-                      } else {
-                        final msg =
-                            controller.selectingMessageList[index - msgLen];
-                        return _buildSelectingCard(
-                            msg, () => _selectMessage(msg.role));
-                      }
-                    },
-                  );
-                } else {
-                  return Container(
-                    alignment: Alignment.center,
-                    child: Text('emptyChat'.tr),
-                  );
-                  // return GetX<PromptController>(builder: ((controller) {
-                  //   if (controller.prompts.isEmpty) {
-                  //     return const Center(
-                  //       child: Center(child: Text("正在加载prompts...")),
-                  //     );
-                  //   } else if (controller.prompts.isNotEmpty) {
-                  //     return PromptsView(controller.prompts, (value) {
-                  //       _controller.text = value;
-                  //     });
-                  //   } else {
-                  //     return const Center(child: Text("加载prompts列表失败，请检查网络"));
-                  //   }
-                  // }));
-                }
-              },
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
+      child: Row(children: [
+        const Expanded(
+          flex: 1,
+          child: SizedBox(),
+        ),
+        Expanded(
+          flex: 9,
+          child: Column(
             children: [
               Expanded(
-                child: Obx(
-                  () => TextFormField(
-                    enabled: Get.find<MessageController>().selecting.isFalse,
-                    style: const TextStyle(fontSize: 13),
-                    controller: _textController,
-                    keyboardType: TextInputType.multiline,
-                    decoration: InputDecoration(
-                      labelText: "inputPrompt".tr,
-                      hintText: "inputPromptTips".tr,
-                      floatingLabelBehavior: FloatingLabelBehavior.auto,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                    ),
-                    autovalidateMode: AutovalidateMode.always,
-                    maxLines: null,
-                    focusNode: FocusNode(
-                      onKeyEvent: _handleKeyEvent,
-                    ),
-                  ),
+                child: GetX<MessageController>(
+                  builder: (controller) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _scrollToNewMessage();
+                    });
+                    if (controller.messageList.isNotEmpty) {
+                      return ListView.builder(
+                        controller: _scrollController,
+                        itemCount: controller.messageList.length +
+                            (controller.selectingMessageList.isNotEmpty
+                                ? 1
+                                : 0),
+                        itemBuilder: (context, index) {
+                          final msgLen = controller.messageList.length;
+                          if (index < msgLen) {
+                            return MessageCard(
+                                message: controller.messageList[index]);
+                          } else {
+                            // final msg =
+                            //     controller.selectingMessageList[index - msgLen];
+                            // return _buildSelectingCard(
+                            //     msg, () => _selectMessage(msg.role));
+                            return SelectCard(
+                              selectList: controller.selectingMessageList,
+                              onSelect:
+                                  Get.find<MessageController>().selectMessage,
+                            );
+                          }
+                        },
+                      );
+                    } else {
+                      return Container(
+                        alignment: Alignment.center,
+                        child: Text('emptyChat'.tr),
+                      );
+                    }
+                  },
                 ),
               ),
-              const SizedBox(width: 16),
-              SizedBox(
-                height: 48,
-                child: Obx(
-                  () => ElevatedButton(
-                    onPressed: Get.find<MessageController>().selecting.isTrue
-                        ? null
-                        : () {
-                            _sendMessage();
-                          },
-                    style: ElevatedButton.styleFrom(
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(8))),
-                      padding: EdgeInsets.zero,
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: Obx(
+                      () => TextFormField(
+                        enabled:
+                            Get.find<MessageController>().selecting.isFalse,
+                        style: const TextStyle(fontSize: 13),
+                        controller: _textController,
+                        keyboardType: TextInputType.multiline,
+                        decoration: InputDecoration(
+                          labelText: "inputPrompt".tr,
+                          hintText: "inputPromptTips".tr,
+                          floatingLabelBehavior: FloatingLabelBehavior.auto,
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                        ),
+                        autovalidateMode: AutovalidateMode.always,
+                        maxLines: null,
+                        focusNode: FocusNode(
+                          onKeyEvent: _handleKeyEvent,
+                        ),
+                      ),
                     ),
-                    child: const Icon(Icons.send),
                   ),
-                ),
+                  const SizedBox(width: 16),
+                  SizedBox(
+                    height: 48,
+                    child: Obx(
+                      () => ElevatedButton(
+                        onPressed:
+                            Get.find<MessageController>().selecting.isTrue
+                                ? null
+                                : () {
+                                    _sendMessage();
+                                  },
+                        style: ElevatedButton.styleFrom(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8))),
+                          padding: EdgeInsets.zero,
+                        ),
+                        child: const Icon(Icons.send),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        ),
+        const Expanded(
+          flex: 1,
+          child: SizedBox(),
+        )
+      ]),
     );
   }
 
@@ -135,6 +151,7 @@ class _ChatWindowState extends State<ChatWindow> {
     final message = _textController.text.trim();
     final MessageController messageController = Get.find();
     final ConversationController conversationController = Get.find();
+    final ModelController modelController = Get.find();
     if (message.isNotEmpty) {
       var conversationId = conversationController.currentConversationId.value;
       if (conversationId.isEmpty) {
@@ -144,114 +161,18 @@ class _ChatWindowState extends State<ChatWindow> {
         );
         conversationController.setCurrentConversationId(conversationId);
       }
-      messageController.sendMessage(conversationId, message);
+      messageController.sendMessage(
+          conversationId, message, modelController.modelList);
       _textController.text = '';
     }
   }
 
-  void _selectMessage(String modelName) async {
-    final MessageController messageController = Get.find();
-    final ConversationController conversationController = Get.find();
-    messageController.selectMessage(
-        conversationController.currentConversationId.value, modelName);
-  }
-
-  Widget _buildMessageCard(Message message) {
-    final userName = Get.find<UserController>().userName.value;
-    if (message.role == userName) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              const FaIcon(FontAwesomeIcons.person),
-              const SizedBox(
-                width: 5,
-              ),
-              Text(userName),
-              const SizedBox(
-                width: 10,
-              )
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Flexible(
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  margin: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Card(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    elevation: 8,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: SelectableText(
-                        style: TextStyle(
-                          color:
-                              Theme.of(context).colorScheme.onPrimaryContainer,
-                          fontSize: 16,
-                        ),
-                        message.text,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      );
-    } else {
-      return Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const SizedBox(
-                width: 10,
-              ),
-              const FaIcon(FontAwesomeIcons.robot),
-              const SizedBox(
-                width: 5,
-              ),
-              Text(message.role),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              // Expanded(
-              //   child: Card(
-              //     elevation: 8,
-              //     margin: const EdgeInsets.all(8),
-              //     child: Markdown(text: message.text),
-              //   ),
-              // ),
-              Flexible(
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  margin: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Card(
-                    color: Theme.of(context).colorScheme.surfaceVariant,
-                    elevation: 8,
-                    child: Markdown(text: message.text),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      );
-    }
-  }
+  // void _selectMessage(Message message) async {
+  //   final MessageController messageController = Get.find();
+  //   final ConversationController conversationController = Get.find();
+  //   messageController.selectMessage(
+  //       message);
+  // }
 
   Widget _buildSelectingCard(Message message, void Function() onSelect) {
     return Column(

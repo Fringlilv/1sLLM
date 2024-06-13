@@ -34,13 +34,16 @@ class OnesLLMTranslations extends Translations {
           "username": "username",
           "password": "password",
           "login": "login",
+          "signup": "signup",
           "selectResponse": "select",
           "emptyChat": "Send message to start new chat",
           "zh": "Chinese",
           "en": "English",
           "followSystem": "follow system",
           "whiteMode": "white mode",
-          "darkMode": "dart mode"
+          "darkMode": "dart mode",
+          "toLogin": "have a account? go to login",
+          "toSignup": "no account? go to signup",
         },
         'zh_CN': {
           "appTitle": "1sLLM",
@@ -73,13 +76,16 @@ class OnesLLMTranslations extends Translations {
           "username": "用户名",
           "password": "密码",
           "login": "登录",
+          "signup": "注册",
           "selectResponse": "选择该回复",
           "emptyChat": "发送信息以创建新对话",
           "zh": "中文",
           "en": "英文",
           "followSystem": "跟随系统",
           "whiteMode": "白色模式",
-          "darkMode": "暗黑模式"
+          "darkMode": "暗黑模式",
+          "toLogin": "已有账号？去登陆",
+          "toSignup": "没有账号？去注册",
         }
       };
 }

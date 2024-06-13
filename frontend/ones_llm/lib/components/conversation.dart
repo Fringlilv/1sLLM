@@ -16,7 +16,7 @@ class ConversationWindow extends StatelessWidget {
       decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.primaryContainer.withAlpha(150),
           border: const Border(right: BorderSide(width: .1))),
-      constraints: const BoxConstraints(maxWidth: 300),
+      constraints: const BoxConstraints(maxWidth: 250),
       child: GetX<ConversationController>(builder: (controller) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,7 +83,10 @@ class ConversationWindow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextButton.icon(
-                    style: ButtonStyle(foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onPrimaryContainer)),
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onBackground),
+                      backgroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.background),
+                    ),
                     onPressed: () {
                       onTapNewConversation();
                       closeDrawer();
@@ -105,7 +108,10 @@ class ConversationWindow extends StatelessWidget {
                     height: 6,
                   ),
                   TextButton.icon(
-                    style: ButtonStyle(foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onPrimaryContainer)),
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onBackground),
+                      backgroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.background),
+                    ),
                     onPressed: () {
                       closeDrawer();
                       Get.toNamed('/setting');

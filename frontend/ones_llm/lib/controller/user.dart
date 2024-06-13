@@ -5,6 +5,7 @@ import 'package:ones_llm/services/api.dart';
 enum LoginStatu {
   notLogin,
   tryingLogin,
+  signUp,
   failLogin,
   hasLogin
 }
@@ -20,6 +21,10 @@ class UserController extends GetxController {
   //   super.onInit();
   //   login('admin', 'admin');
   // }
+
+  void signUp(String username, String password, void Function() onSuccess) async {
+    
+  }
 
   void login(String username, String password, void Function() onSuccess) async {
     statu.value = LoginStatu.tryingLogin;

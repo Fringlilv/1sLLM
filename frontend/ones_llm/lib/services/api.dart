@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:get/get.dart' hide Response;
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:ones_llm/services/api/error.dart';
 
 class Conversation {
   String name;
@@ -51,6 +52,18 @@ class Message {
   }
 }
 
+// class Model {
+//   String name;
+//   bool selected;
+//   bool availabel;
+//   Model(
+//     {required this.name,
+//     required this.selected,
+//     required this.availabel}
+//   );
+// }
+
+
 enum LoginResponse {
   success,
   badUser,
@@ -77,6 +90,7 @@ class ApiService extends GetxService {
     // _dio.options.headers["X-Requested-With"] = "XMLHttpRequest";
     // _dio.options.headers["Access-Control-Allow-Origin"] = "*";
     _dio.interceptors.add(LogInterceptor(responseBody: true));
+    _dio.interceptors.add(errorInterceptor);
     _dio.interceptors.add(CookieManager(PersistCookieJar()));
   }
 
@@ -164,7 +178,23 @@ class ApiService extends GetxService {
     // }
   }
 
-  Future<List<String>> getModelList() async {
+  Future<List<String>> getAllModels() async {
+    try {
+      // final response = await _get<Map<String, dynamic>>(
+      //   '/chat/list',
+      // );
+      // List<Conversation> convList = [];
+      // response.forEach((key, value) {
+      //   convList.add(Conversation(name: value['chat_title'], description: value['chat_title'], id: key));
+      // });
+      return ['gpt-3.5-turbo-ca'];
+    } on DioException catch (_) {
+      // 处理错误，例如自动重试
+      rethrow;
+    }
+  }
+
+  Future<List<String>> getAvailableModels() async {
     try {
       // final response = await _get<Map<String, dynamic>>(
       //   '/chat/list',

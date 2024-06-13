@@ -8,6 +8,7 @@ import 'package:ones_llm/configs/route.dart';
 import 'package:ones_llm/configs/translations.dart';
 import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/controller/message.dart';
+import 'package:ones_llm/controller/model.dart';
 import 'package:ones_llm/controller/setting.dart';
 import 'package:ones_llm/controller/user.dart';
 import 'package:ones_llm/pages/home.dart';
@@ -27,14 +28,15 @@ class MyApp extends StatelessWidget {
     Get.put(ApiService());
     Get.put(UserController());
     Get.put(SettingController());
+    Get.put(ModelController());
     Get.put(ConversationController());
     Get.put(MessageController());
     return GetMaterialApp(
-      initialRoute: '/login',
+      initialRoute: '/',
       getPages: routes,
       unknownRoute:
           GetPage(name: '/', page: () => MyHomePage()),
-      theme: FlexThemeData.light(scheme: FlexScheme.jungle),
+      theme: FlexThemeData.light(scheme: FlexScheme.deepBlue),
       darkTheme: FlexThemeData.dark(scheme: FlexScheme.brandBlue),
       themeMode: ThemeMode.system,
       locale: const Locale('zh'),
