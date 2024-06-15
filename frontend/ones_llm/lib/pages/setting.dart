@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:ones_llm/controller/model.dart';
 import 'package:ones_llm/controller/setting.dart';
 import 'package:get/get.dart';
 
-class SettingPage extends GetResponsiveView<SettingController> {
+class SettingPage extends GetResponsiveView {
   SettingPage({super.key});
 
   @override
@@ -11,9 +12,39 @@ class SettingPage extends GetResponsiveView<SettingController> {
       appBar: AppBar(
         title: Text('settings'.tr),
       ),
-      body: GetX<SettingController>(builder: (controller) {
+      body: Obx(() {
+        final modelController = Get.find<ModelController>();
+        final settingController = Get.find<SettingController>();
+        final keyControllers = { for (final element in modelController.modelProviderMap.entries) element.key : TextEditingController() };
+        settingController.fillApiKeyToControllers(keyControllers);
         return ListView(
           children: [
+            const Divider(),
+            const ListTile(
+              dense: true,
+              title: Text('Api Key',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+            ...[
+              for (final apiKey in keyControllers.entries)
+              TextFormField(
+                style: const TextStyle(fontSize: 16),
+                controller: apiKey.value,
+                decoration: InputDecoration(
+                  labelText: apiKey.key,
+                  labelStyle: TextStyle(fontSize: 16, color: Theme.of(Get.context!).colorScheme.onPrimaryContainer.withAlpha(150)),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(50),
+                    // borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Theme.of(Get.context!).colorScheme.background.withAlpha(150),
+                ),
+            ),
+            ],
+            
             const Divider(),
             ListTile(
               dense: true,
@@ -23,25 +54,25 @@ class SettingPage extends GetResponsiveView<SettingController> {
             RadioListTile(
               title: Text('followSystem'.tr),
               value: ThemeMode.system,
-              groupValue: controller.themeMode.value,
+              groupValue: settingController.themeMode.value,
               onChanged: (value) {
-                controller.setThemeMode(ThemeMode.system);
+                settingController.setThemeMode(ThemeMode.system);
               },
             ),
             RadioListTile(
               title: Text('darkMode'.tr),
               value: ThemeMode.dark,
-              groupValue: controller.themeMode.value,
+              groupValue: settingController.themeMode.value,
               onChanged: (value) {
-                controller.setThemeMode(ThemeMode.dark);
+                settingController.setThemeMode(ThemeMode.dark);
               },
             ),
             RadioListTile(
               title: Text('whiteMode'.tr),
               value: ThemeMode.light,
-              groupValue: controller.themeMode.value,
+              groupValue: settingController.themeMode.value,
               onChanged: (value) {
-                controller.setThemeMode(ThemeMode.light);
+                settingController.setThemeMode(ThemeMode.light);
               },
             ),
             const Divider(),
@@ -53,17 +84,17 @@ class SettingPage extends GetResponsiveView<SettingController> {
             RadioListTile(
               title: Text('zh'.tr),
               value: 'zh',
-              groupValue: controller.locale.value.languageCode,
+              groupValue: settingController.locale.value.languageCode,
               onChanged: (value) {
-                controller.setLocale(const Locale('zh'));
+                settingController.setLocale(const Locale('zh'));
               },
             ),
             RadioListTile(
               title: Text('en'.tr),
               value: 'en',
-              groupValue: controller.locale.value.languageCode,
+              groupValue: settingController.locale.value.languageCode,
               onChanged: (value) {
-                controller.setLocale(const Locale('en'));
+                settingController.setLocale(const Locale('en'));
               },
             ),
             const Divider(),
@@ -88,7 +119,7 @@ class SettingPage extends GetResponsiveView<SettingController> {
             //     onChanged: (value) {
             //       controller.setUseWebSearch(value);
             //     }),
-            const Divider(),
+            // const Divider(),
             // DropdownButtonFormField(
             //   value: controller.llm.value,
             //   decoration: InputDecoration(
@@ -121,38 +152,38 @@ class SettingPage extends GetResponsiveView<SettingController> {
             //   },
             // ),
             // const Divider(),
-            controller.llm.value == "You"
-                ? TextFormField(
-                    initialValue: controller.youCode.value,
-                    decoration: InputDecoration(
-                      labelText: 'youCode'.tr,
-                      hintText: 'youCodeTips'.tr,
-                      labelStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(Get.context!).colorScheme.primary),
-                      floatingLabelBehavior: FloatingLabelBehavior.auto,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                    ),
-                    autovalidateMode: AutovalidateMode.always,
-                    maxLines: 1,
-                    onChanged: (value) => {
-                      controller.setYouCode(value),
-                    },
-                    onEditingComplete: () {},
-                    onFieldSubmitted: (value) {
-                      controller.setYouCode(value);
-                    },
-                  )
-                : const SizedBox(),
-            const SizedBox(
-              height: 20,
-            ),
+            // controller.llm.value == "You"
+            //     ? TextFormField(
+            //         initialValue: controller.youCode.value,
+            //         decoration: InputDecoration(
+            //           labelText: 'youCode'.tr,
+            //           hintText: 'youCodeTips'.tr,
+            //           labelStyle: TextStyle(
+            //               fontWeight: FontWeight.bold,
+            //               color: Theme.of(Get.context!).colorScheme.primary),
+            //           floatingLabelBehavior: FloatingLabelBehavior.auto,
+            //           contentPadding: const EdgeInsets.symmetric(
+            //               horizontal: 16, vertical: 8),
+            //           border: OutlineInputBorder(
+            //             borderRadius: BorderRadius.circular(5),
+            //             borderSide: BorderSide.none,
+            //           ),
+            //           filled: true,
+            //         ),
+            //         autovalidateMode: AutovalidateMode.always,
+            //         maxLines: 1,
+            //         onChanged: (value) => {
+            //           controller.setYouCode(value),
+            //         },
+            //         onEditingComplete: () {},
+            //         onFieldSubmitted: (value) {
+            //           controller.setYouCode(value);
+            //         },
+            //       )
+            //     : const SizedBox(),
+            // const SizedBox(
+            //   height: 20,
+            // ),
             // controller.llm.value == "OpenAI"
             //     ? TextFormField(
             //         initialValue: controller.openAiKey.value,
@@ -195,11 +226,11 @@ class SettingPage extends GetResponsiveView<SettingController> {
             //         obscureText: controller.isObscure.value,
             //       )
             //     : const SizedBox(),
-            controller.llm.value == "OpenAI"
-                ? const SizedBox(
-                    height: 20,
-                  )
-                : const SizedBox(),
+            // controller.llm.value == "OpenAI"
+            //     ? const SizedBox(
+            //         height: 20,
+            //       )
+            //     : const SizedBox(),
             // controller.llm.value == "OpenAI" || controller.llm.value == "You"
             //     ? DropdownButtonFormField(
             //         value: controller.openAiBaseUrl.value,
@@ -238,11 +269,11 @@ class SettingPage extends GetResponsiveView<SettingController> {
             //         },
             //       )
             //     : const SizedBox(),
-            controller.llm.value == "OpenAI" || controller.llm.value == "You"
-                ? const SizedBox(
-                    height: 20,
-                  )
-                : const SizedBox(),
+            // controller.llm.value == "OpenAI" || controller.llm.value == "You"
+            //     ? const SizedBox(
+            //         height: 20,
+            //       )
+            //     : const SizedBox(),
             // controller.llm.value == "OpenAI" || controller.llm.value == "You"
             //     ? DropdownButtonFormField(
             //         value: controller.gptModel.value,
@@ -279,8 +310,8 @@ class SettingPage extends GetResponsiveView<SettingController> {
             //         })
             //     : const SizedBox(),
           ],
-        );
-      }),
+        );}
+      ),
     );
   }
 }

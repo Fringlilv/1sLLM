@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ones_llm/components/login.dart';
 
 final errorInterceptor = InterceptorsWrapper(
   onError: (error, handler) async {
@@ -17,7 +19,7 @@ final errorInterceptor = InterceptorsWrapper(
         // 服务器响应错误处理
         switch (error.response!.statusCode) {
           case 403:
-            Get.offNamed('/login');
+            Get.dialog(const LoginDialog());
         }
         break;
       case DioExceptionType.cancel:

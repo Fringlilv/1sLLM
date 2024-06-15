@@ -52,18 +52,6 @@ class Message {
   }
 }
 
-// class Model {
-//   String name;
-//   bool selected;
-//   bool availabel;
-//   Model(
-//     {required this.name,
-//     required this.selected,
-//     required this.availabel}
-//   );
-// }
-
-
 enum LoginResponse {
   success,
   badUser,
@@ -178,7 +166,7 @@ class ApiService extends GetxService {
     // }
   }
 
-  Future<List<String>> getAllModels() async {
+  Future<Map<String, String>> getAllApiKey() async {
     try {
       // final response = await _get<Map<String, dynamic>>(
       //   '/chat/list',
@@ -187,14 +175,14 @@ class ApiService extends GetxService {
       // response.forEach((key, value) {
       //   convList.add(Conversation(name: value['chat_title'], description: value['chat_title'], id: key));
       // });
-      return ['gpt-3.5-turbo-ca'];
+      return {'gpt': 'sk-123456'};
     } on DioException catch (_) {
       // 处理错误，例如自动重试
       rethrow;
     }
   }
 
-  Future<List<String>> getAvailableModels() async {
+  Future<bool> SetApiKey(Map<String, String> keyMap) async {
     try {
       // final response = await _get<Map<String, dynamic>>(
       //   '/chat/list',
@@ -203,7 +191,39 @@ class ApiService extends GetxService {
       // response.forEach((key, value) {
       //   convList.add(Conversation(name: value['chat_title'], description: value['chat_title'], id: key));
       // });
-      return ['gpt-3.5-turbo-ca'];
+      return true;
+    } on DioException catch (_) {
+      // 处理错误，例如自动重试
+      rethrow;
+    }
+  }
+
+  Future<Map<String, List<String>>> getAllModels() async {
+    try {
+      // final response = await _get<Map<String, dynamic>>(
+      //   '/chat/list',
+      // );
+      // List<Conversation> convList = [];
+      // response.forEach((key, value) {
+      //   convList.add(Conversation(name: value['chat_title'], description: value['chat_title'], id: key));
+      // });
+      return {'gpt': ['gpt-3.5-turbo-ca', 'gpt-3.5-turbo', 'gpt-4-turbo']};
+    } on DioException catch (_) {
+      // 处理错误，例如自动重试
+      rethrow;
+    }
+  }
+
+  Future<List<String>> getAvailableProviders() async {
+    try {
+      // final response = await _get<Map<String, dynamic>>(
+      //   '/chat/list',
+      // );
+      // List<Conversation> convList = [];
+      // response.forEach((key, value) {
+      //   convList.add(Conversation(name: value['chat_title'], description: value['chat_title'], id: key));
+      // });
+      return ['gpt'];
     } on DioException catch (_) {
       // 处理错误，例如自动重试
       rethrow;

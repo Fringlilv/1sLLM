@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ones_llm/components/markdown/code_wrapper.dart';
+import 'package:ones_llm/components/markdown/codeWrapper.dart';
 import 'package:ones_llm/components/markdown/latex.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 

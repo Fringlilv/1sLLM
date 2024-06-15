@@ -40,8 +40,10 @@ class ConversationWindow extends StatelessWidget {
                         return Card(
                           elevation: 1,
                           color: Theme.of(context).colorScheme.background.withAlpha(235),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                           child: Obx(() => ListTile(
                             tileColor: Theme.of(context).colorScheme.primaryContainer.withAlpha(70),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                             // selectedColor: Theme.of(context).colorScheme.primaryContainer.withAlpha(20),
                             onTap: () {
                               _tapConversation(index);
@@ -86,6 +88,7 @@ class ConversationWindow extends StatelessWidget {
                     style: ButtonStyle(
                       foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onBackground),
                       backgroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.background),
+                      shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50))),
                     ),
                     onPressed: () {
                       onTapNewConversation();
@@ -97,6 +100,22 @@ class ConversationWindow extends StatelessWidget {
                   const SizedBox(
                     height: 6,
                   ),
+                  TextButton.icon(
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onBackground),
+                      backgroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.background),
+                      shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50))),
+                    ),
+                    onPressed: () {
+                      controller.getConversations();
+                      closeDrawer();
+                    },
+                    label: Text('refresh'.tr),
+                    icon: const Icon(Icons.refresh_rounded),
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
                   // GetX<SettingsController>(builder: (controller) {
                   //   return TextButton.icon(
                   //     onPressed: () {},
@@ -104,13 +123,11 @@ class ConversationWindow extends StatelessWidget {
                   //     icon: const Icon(Icons.info),
                   //   );
                   // }),
-                  const SizedBox(
-                    height: 6,
-                  ),
                   TextButton.icon(
                     style: ButtonStyle(
                       foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onBackground),
                       backgroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.background),
+                      shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50))),
                     ),
                     onPressed: () {
                       closeDrawer();

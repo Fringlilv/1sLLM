@@ -38,7 +38,7 @@ const MessageCard({ super.key, required this.message});
                   padding: const EdgeInsets.all(8),
                   margin: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Card(
                     color: Theme.of(context).colorScheme.primaryContainer,

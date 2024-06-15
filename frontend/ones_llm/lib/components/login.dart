@@ -4,14 +4,9 @@ import 'package:ones_llm/controller/conversation.dart';
 
 import 'package:ones_llm/controller/user.dart';
 
-class LoginWindow extends StatefulWidget {
-  const LoginWindow({super.key});
+class _LoginWindow extends StatelessWidget {
+  _LoginWindow({super.key});
 
-  @override
-  State<LoginWindow> createState() => _LoginWindowState();
-}
-
-class _LoginWindowState extends State<LoginWindow> {
   final _userController = TextEditingController();
   final _pdController = TextEditingController();
   final _pd2Controller = TextEditingController();
@@ -22,10 +17,6 @@ class _LoginWindowState extends State<LoginWindow> {
   Widget build(BuildContext context) {
     return Obx(() => 
       Container(
-      alignment: Alignment.center,
-      color: Theme.of(context).colorScheme.primaryContainer.withAlpha(50),
-      child: Container(
-        margin: const EdgeInsets.all(20),
         padding: const EdgeInsets.all(50),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.primaryContainer.withAlpha(20),
@@ -35,7 +26,6 @@ class _LoginWindowState extends State<LoginWindow> {
         constraints: BoxConstraints(maxWidth: 500, maxHeight: login.value == LoginStatu.signUp?500:400),
         child: Column(
           children: [
-            // const Expanded(flex: 1, child: SizedBox()),
             Expanded(
               flex: 2,
               child: TextFormField(
@@ -90,6 +80,7 @@ class _LoginWindowState extends State<LoginWindow> {
                     borderRadius: BorderRadius.circular(50),
                     // borderSide: BorderSide.none,
                   ),
+                  filled: true,
                   fillColor: Theme.of(context).colorScheme.background.withAlpha(150),
                 ),
               ),
@@ -130,10 +121,8 @@ class _LoginWindowState extends State<LoginWindow> {
                 ),
               ),
             ),
-            // const Expanded(flex: 1, child: SizedBox()),
           ],
         ),
-      ),
     ));
   }
 
@@ -142,7 +131,7 @@ class _LoginWindowState extends State<LoginWindow> {
     final password = _pdController.text.trim();
     if(login.value != LoginStatu.signUp) {
       userController.login(username, password, () {
-      Get.offNamed('/home');
+      Get.back(); 
       Get.find<ConversationController>().getConversations();
     });
     } else {
@@ -159,6 +148,7 @@ class _LoginWindowState extends State<LoginWindow> {
     _userController.text = '';
     _pdController.text = '';
     _pd2Controller.text = '';
+
   }
 
   void _toLogin() {
@@ -166,5 +156,31 @@ class _LoginWindowState extends State<LoginWindow> {
     _userController.text = '';
     _pdController.text = '';
     _pd2Controller.text = '';
+  }
+}
+
+class LoginWindow extends StatelessWidget {
+const LoginWindow({ super.key });
+
+  @override
+  Widget build(BuildContext context){
+    return Container(
+      alignment: Alignment.center,
+      color: Theme.of(context).colorScheme.primaryContainer.withAlpha(50),
+      child: _LoginWindow()
+    );
+  }
+}
+
+class LoginDialog extends StatelessWidget {
+const LoginDialog({ super.key });
+
+  @override
+  Widget build(BuildContext context){
+    return Dialog(
+      backgroundColor: Theme.of(context).colorScheme.background,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+      child: _LoginWindow(),
+    );
   }
 }
