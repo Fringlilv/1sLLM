@@ -202,10 +202,7 @@ def chat_sel():
 
 if __name__ == '__main__':
     # admin配置
-    admin = data.User('admin', '123456')
-    api1 = data.Api('model', '123456')
-    admin.add_api(api1)
-    server.add_user(admin)
+    admin = data.User('admin', hashlib.md5('123456'.encode('utf-8')).hexdigest())
     # 启动服务器
     app.secret_key = '123456'
     app.run('0.0.0.0', port=8000, debug=True)
