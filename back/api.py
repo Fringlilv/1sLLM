@@ -41,12 +41,13 @@ class Api(metaclass=LockAndSubclassTrackingMeta):
         self.api_key = api_key
         self.supported_models = self._list_models()
     
+    @staticmethod
     @locked_method
-    def get_supported_service_providers(self):
+    def get_supported_service_providers():
         """
         查看支持哪些服务商.
         """
-        all_subclasses = self.all_subclasses()
+        all_subclasses = Api.all_subclasses()
         supported_service_providers = [cls.__name__.replace('_Api', '') for cls in all_subclasses]
         return supported_service_providers
     

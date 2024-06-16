@@ -34,6 +34,12 @@ class Chat:
         self.msg_list = []
         self.recv_msg_tmp = {}
 
+    def set_title(self, title):
+        """
+        设置标题.
+        """
+        self.chat_title = title
+
     def add_msg(self, msg):
         """
         添加消息.
@@ -158,6 +164,12 @@ class Sever:
         if self.session_dict.get(uname) == sid:
             return self.user_list[self.user_dict[uname]]
         return None
+
+    def check_user_name_exist(self, uname):
+        """
+        检查用户名是否存在.
+        """
+        return uname in self.user_dict
 
     def load(self, path):
         pass
