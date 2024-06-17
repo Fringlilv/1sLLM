@@ -8,10 +8,11 @@ class Message:
     存储一条消息.
     """
 
-    def __init__(self, role, name, msg):
+    def __init__(self, role, name, msg, code):
         self.role = role
         self.name = name
         self.msg = msg
+        self.code = code
 
     def __dict__(self):
         return {'role': self.name, 'content': self.msg}
@@ -95,7 +96,7 @@ class User:
         """
         del self.chat_dict[chat_id]
 
-    def add_api(self, service_provider_name, api_key):
+    def add_api(self, service_provider_name, api_key) -> bool:
         """
         添加/覆盖api.
         """

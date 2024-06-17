@@ -42,13 +42,20 @@ class Api(metaclass=LockAndSubclassTrackingMeta):
     """
     存储api信息的基类.
     """
-    def __init__(self, api_key) -> None:
+    def __init__(self, api_key=None) -> None:
         self.api_key = api_key
         self.supported_models = self._list_models()
     
     @staticmethod
     @locked_method
-    def get_supported_service_providers():
+    def get_provider_models():
+        supported_service_providers = Api._get_supported_service_providers()
+        provider_models = {provider: eval(f"{provider}_Api").supported_models for provider in supported_service_providers}
+        return provider_models
+
+    @staticmethod
+    @locked_method
+    def _get_supported_service_providers():
         """
         查看支持哪些服务商.
         """
@@ -69,7 +76,7 @@ class Api(metaclass=LockAndSubclassTrackingMeta):
         """
         raise NotImplementedError("Subclasses should implement this method.")
     
-    def _get_response(self, chat, model_list):
+    def _get_response(self, chat, model_list, api_key):
         """
         获取model_list的回复.
         """
@@ -77,7 +84,7 @@ class Api(metaclass=LockAndSubclassTrackingMeta):
 
 class OpenAI_agent_Api(Api):
     def __init__(self, api_key) -> None:
-        super().__init__(api_key)
+        super().__init__(api_key=api_key)
         self.client = OpenAI(
             api_key=self.api_key,
             base_url="https://api.chatanywhere.tech/v1",
@@ -98,17 +105,21 @@ class OpenAI_agent_Api(Api):
         return data
     
     def _get_response(self, chat, model_id):
-        msg_list = [msg.to_role_dict() for msg in chat.msg_list]
-        completion = self.client.chat.completions.create(
-            model=model_id,
-            messages=msg_list
-        )
-        data = completion.choices[0].message.content
+        try:
+            msg_list = [msg.to_role_dict() for msg in chat.msg_list]
+            completion = self.client.chat.completions.create(
+                model=model_id,
+                messages=msg_list
+            )
+            data = {'code': 1, 'message': completion.choices[0].message.content}
+        except Exception as e:
+            print(e)
+            data = {'code': 0, 'message': e}
         return data
 
 class Qwen_Api(Api):
     def __init__(self, api_key) -> None:
-        super().__init__(api_key)
+        super().__init__(api_key=api_key)
         self.client = OpenAI(
             api_key=self.api_key,
             base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
@@ -137,17 +148,21 @@ class Qwen_Api(Api):
             return []
 
     def _get_response(self, chat, model_id):
-        msg_list = [msg.to_role_dict() for msg in chat.msg_list]
-        completion = self.client.chat.create(
-            model=model_id,
-            messages=msg_list
-        )
-        data = completion.choices[0].message.content
+        try:
+            msg_list = [msg.to_role_dict() for msg in chat.msg_list]
+            completion = self.client.chat.create(
+                model=model_id,
+                messages=msg_list
+            )
+            data = {'code': 1, 'message': completion.choices[0].message.content}
+        except Exception as e:
+            print(e)
+            data = {'code': 0, 'message': e}
         return data
 
 
 if __name__ == "__main__":
-    OpenAI_agent = OpenAI_agent_Api(api_key='')
+    OpenAI_agent = OpenAI_agent_Api(api_key='sk-yvEwm4Ho60mnUvzUQSByjc8aCWWUFS4glzEsq02M8EKfJ5Rh')
     print(OpenAI_agent.supported_models)
 
     chat = [
@@ -163,7 +178,7 @@ if __name__ == "__main__":
     # 计时
     import time
     start = time.time()
-    responses = OpenAI_agent.get_responses(chat, ['gpt-3.5-turbo-ca', 'gpt-3.5-turbo-0301'])
+    responses = OpenAI_agent.get_responses(chat, ['gpt-3.5-turbo', 'gpt-3.5-turbo-0125'])
     end = time.time()
 
     print(responses)

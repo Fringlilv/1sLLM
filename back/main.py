@@ -17,13 +17,12 @@ class WebSever:
 
         # 未登录可用
         self.app.add_url_rule('/', view_func=self.index)
-        self.app.add_url_rule('/api/providers', view_func=self.api_providers)
+        self.app.add_url_rule('/api/providers', view_func=self.api_provider_models)
         self.app.add_url_rule('/user/exist', view_func=self.user_exist)
         self.app.add_url_rule('/user/register', view_func=self.user_register)
         self.app.add_url_rule('/user/login', view_func=self.user_login)
         # 登录后可用
         self.app.add_url_rule('/user/logout', view_func=self.user_logout)
-        self.app.add_url_rule('/api/models', view_func=self.api_models)
         self.app.add_url_rule('/api/list', view_func=self.api_list)
         self.app.add_url_rule('/api/add', view_func=self.api_add)
         self.app.add_url_rule('/api/del', view_func=self.api_del)
@@ -100,20 +99,11 @@ class WebSever:
         self.server.session_dict.pop(username)
         return json.dumps('success'), 200
 
-    def api_providers(self):
+    def api_provider_models(self):
         """
         获取支持的服务商.
         """
-        return json.dumps(data.Api.get_supported_service_providers()), 200
-
-    def api_models(self):
-        """
-        获取支持的模型.
-        """
-        user = self.server.get_user(session.get('username'), session.get('session_id'))
-        if user is None:
-            return json.dumps('invalid_user'), 403
-        return json.dumps(user.available_models), 200
+        return json.dumps(data.Api.get_provider_models()), 200
 
     def api_list(self):
         """
@@ -246,7 +236,7 @@ class WebSever:
                 responses = api.get_responses(chat, model_list)
                 print(responses)
                 for idx, model in enumerate(model_list):
-                    recv_msg = data.Message('assistant', model, responses[idx])
+                    recv_msg = data.Message('assistant', model, responses[idx]['message'], responses[idx]['code'])
                     chat.add_recv_msg(model, recv_msg)
         return json.dumps(chat.recv_msg_tmp, default=lambda o: o.__dict__()), 200
 
