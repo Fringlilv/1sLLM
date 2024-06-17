@@ -103,7 +103,7 @@ class WebSever:
         """
         获取全局支持的服务商.
         """
-        return json.dumps(data.Api.api_providers()), 200
+        return json.dumps(Api.get_providers()), 200
     
     def api_models(self):
         """
