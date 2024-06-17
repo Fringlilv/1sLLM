@@ -14,16 +14,14 @@ class Server(DB):
     """
 
     def __init__(self):
-        self.user_list = []
-        self.user_dict = {}
-        self.session_dict = {}
+        self._user_dict = {}
+        self._session_dict = {}
 
-    def add_user(self, user):
+    def add_user(self, user : User):
         """
         添加用户.
         """
-        self.user_dict[user.username] = len(self.user_list)
-        self.user_list.append(user)
+        self._user_dict[user.get_username()] = user
 
     def gen_chat_id(self, username):
         """
@@ -42,11 +40,11 @@ class Server(DB):
         sid = hashlib.md5(txt.encode('utf-8')).hexdigest()
         return sid
 
-    def get_chat(self, user, cid) -> Chat:
+    def get_chat(self, user : User, cid) -> Chat:
         """
         获取chat.
         """
-        chat = user.chat_dict.get(cid)
+        chat = user.get_chat(cid)
         if chat is None:
             return None
         return chat
@@ -57,15 +55,33 @@ class Server(DB):
         """
         if uname is None or sid is None:
             return None
-        if self.session_dict.get(uname) == sid:
-            return self.user_list[self.user_dict[uname]]
+        if self._session_dict.get(uname) == sid:
+            return self._user_dict[uname]
         return None
 
     def check_user_name_exist(self, uname):
         """
         检查用户名是否存在.
         """
-        return uname in self.user_dict
+        return uname in self._user_dict
     
+    def get_password_md5(self, uname):
+        """
+        获取用户密码的md5.
+        """
+        return self._user_dict[uname].get_password()
+    
+    def set_session_dict(self, key, value):
+        """
+        设置session_dict.
+        """
+        self._session_dict[key] = value
+
+    def pop_session_dict(self, key):
+        """
+        删除session_dict.
+        """
+        self._session_dict.pop(key)
+
     def _db_dict(self):
         pass
