@@ -28,14 +28,14 @@ class MessageController extends GetxController {
   void sendMessage(
     String conversationId,
     String text,
-    List<String> selectModel
+    Map<String, List<String>> selectProviderModels
   ) async {
     selecting.value = true;
     final messages = await api.getMessages(conversationId);
     final sendedMessage = Message(conversationId: conversationId, text: text, role: Get.find<UserController>().userName.value);
     messageList.value = [...messages['msgList']!, sendedMessage];
 
-    final newMessages = await api.sendMessage(conversationId, text, selectModel);
+    final newMessages = await api.sendMessage(conversationId, text, selectProviderModels);
     selectingMessageList.value = newMessages;
   }
 

@@ -7,7 +7,7 @@ class SettingPage extends GetResponsiveView {
   SettingPage({super.key});
   final modelController = Get.find<ModelController>();
   final settingController = Get.find<SettingController>();
-  final keyControllers = { for (final element in Get.find<ModelController>().modelProviderMap.entries) element.key : TextEditingController() };
+  final keyControllers = { for (final element in Get.find<ModelController>().modelProviderMap.keys) element : TextEditingController() };
 
 
   @override

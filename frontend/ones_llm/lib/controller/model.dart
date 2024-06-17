@@ -11,9 +11,9 @@ class Model {
 
 class ModelProvider {
   String name;
-  bool available;
+  // bool available = false;
   Map<String, Model> modelMap = {};
-  ModelProvider({required this.name, required this.available});
+  ModelProvider({required this.name});
 }
 
 class ModelController extends GetxController {
@@ -26,13 +26,27 @@ class ModelController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getAllModels();
+    getAllProviders();
   }
 
-  void getAllModels() async {
-    final modelData = await api.getAllModels();
+  void getAllProviders() async {
+    final modelData = await api.getAllProviders();
+    for (var elements in modelData) {
+      modelProviderMap[elements] ??= ModelProvider(name: elements);
+    }
+    final keysToRemove = modelProviderMap.keys
+        .where((providerKey) => !modelData.contains(providerKey))
+        .toList();
+    for (final key in keysToRemove) {
+      modelProviderMap.remove(key);
+    }
+    update();
+  }
+
+  void getAvailableProviderModels() async {
+    final modelData = await api.getAvailableProviderModels();
     modelData.forEach((key, elements) {
-      modelProviderMap[key] ??= ModelProvider(name: key, available: false);
+      modelProviderMap[key] ??= ModelProvider(name: key);
 
       final existingNames = modelProviderMap[key]!.modelMap.keys.toSet();
       final uniqueElements = elements.toSet().difference(existingNames);
@@ -47,20 +61,6 @@ class ModelController extends GetxController {
         modelProviderMap[key]!.modelMap.remove(modelName);
       }
     });
-    final keysToRemove = modelProviderMap.keys
-        .where((providerKey) => !modelData.containsKey(providerKey))
-        .toList();
-    for (final key in keysToRemove) {
-      modelProviderMap.remove(key);
-    }
-    update();
-  }
-
-  void getAvailableModels() async {
-    final providerAvalible = await api.getAvailableProviders();
-    for (final element in providerAvalible) {
-      modelProviderMap[element]?.available = true;
-    }
     update();
   }
 
@@ -70,13 +70,14 @@ class ModelController extends GetxController {
     update();
   }
 
-  List<String> selected() {
-    final l = <String>[];
+  Map<String, List<String>> selected() {
+    final l = { for (var element in modelProviderMap.keys) element : <String>[] };
     for (final element in modelProviderMap.values) {
       for (final model in element.modelMap.values) {
-        if (model.selected) l.add(model.name);
+        l[element.name]?.add(model.name);
       }
     }
+    l.removeWhere((k, v)=>v.isEmpty);
     return l;
   }
 }

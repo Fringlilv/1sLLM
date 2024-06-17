@@ -32,12 +32,14 @@ class Message {
   String role;
   String text;
   String? modelName;
+  bool error;
   Message(
       {this.id,
       required this.conversationId,
       required this.text,
       required this.role,
-      this.modelName});
+      this.modelName,
+      this.error = false});
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -86,7 +88,8 @@ class ApiService extends GetxService {
     try {
       final response = await _dio.get<String>(
         path,
-        queryParameters: queryParameters?.map((key, value) => MapEntry(key, base64Encode(utf8.encode(value)))),
+        queryParameters: queryParameters?.map(
+            (key, value) => MapEntry(key, base64Encode(utf8.encode(value)))),
         options: options,
         cancelToken: cancelToken,
         onReceiveProgress: onReceiveProgress,
@@ -108,7 +111,8 @@ class ApiService extends GetxService {
       final response = await _dio.post<T>(
         path,
         data: data,
-        queryParameters: queryParameters?.map((key, value) => MapEntry(key, base64Encode(utf8.encode(value)))),
+        queryParameters: queryParameters?.map(
+            (key, value) => MapEntry(key, base64Encode(utf8.encode(value)))),
         options: options,
         cancelToken: cancelToken,
         onSendProgress: onSendProgress,
@@ -166,18 +170,18 @@ class ApiService extends GetxService {
     return true;
   }
 
-  Future<Map<String, List<String>>> getAllModels() async {
-    final response = await _get<Map<String, dynamic>>(
+  Future<List<String>> getAllProviders() async {
+    final response = await _get<List<String>>(
       '/api/providers',
     );
-    return Map.from(response);
+    return response;
   }
 
-  Future<List<String>> getAvailableProviders() async {
+  Future<Map<String, List<String>>> getAvailableProviderModels() async {
     final response = await _get<Map<String, dynamic>>(
-      '/api/list',
+      '/api/models',
     );
-    return response.keys.toList();
+    return Map.from(response);
   }
 
   Future<List<Conversation>> getConversations() async {
@@ -240,21 +244,33 @@ class ApiService extends GetxService {
   Future<List<Message>> sendMessage(
     String conversationId,
     String text,
-    List<String> modelList,
+    Map<String, List<String>> providerModels,
   ) async {
-    final response =
-        await _get<Map<String, dynamic>>('/chat/gen', queryParameters: {
-      'cid': conversationId,
-      'p': text,
-      'ml': modelList
-    });
+    final response = await _get<Map<String, dynamic>>('/chat/gen',
+        queryParameters: {
+          'cid': conversationId,
+          'p': text,
+          'provider_models': providerModels
+        });
     List<Message> messageList = [];
     response.forEach((key, value) {
-      messageList.add(Message(
-          conversationId: conversationId,
-          modelName: key,
-          text: value['content'],
-          role: value['role']));
+      switch (value['code']) {
+        case 1:
+          messageList.add(Message(
+              conversationId: conversationId,
+              modelName: key,
+              text: value['content'],
+              role: value['role']));
+          break;
+        case 0:
+          messageList.add(Message(
+              conversationId: conversationId,
+              modelName: key,
+              text: value['content'],
+              role: value['role'],
+              error: true));
+          break;
+      }
     });
     return messageList;
   }
@@ -263,10 +279,8 @@ class ApiService extends GetxService {
     String conversationId,
     String model,
   ) async {
-    final response = await _get<String>('/chat/sel', queryParameters: {
-      'cid': conversationId,
-      'name': model
-    });
+    final response = await _get<String>('/chat/sel',
+        queryParameters: {'cid': conversationId, 'name': model});
     return true;
   }
 }
