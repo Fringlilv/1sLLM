@@ -1,9 +1,8 @@
 import base64
 import hashlib
 import json
-import random
-import time
 import data
+from api.base import Api
 from flask import Flask, request, session, redirect
 from flask_cors import CORS
 
@@ -12,17 +11,18 @@ class WebSever:
     def __init__(self):
         self.app = Flask(__name__, static_folder='static', static_url_path='')
         CORS(self.app, supports_credentials=True)
-        self.server = data.Sever()
+        self.server = data.Server()
         self.app.secret_key = '123456'
 
         # 未登录可用
         self.app.add_url_rule('/', view_func=self.index)
-        self.app.add_url_rule('/api/providers', view_func=self.api_provider_models)
+        self.app.add_url_rule('/api/providers', view_func=self.api_providers)
         self.app.add_url_rule('/user/exist', view_func=self.user_exist)
         self.app.add_url_rule('/user/register', view_func=self.user_register)
         self.app.add_url_rule('/user/login', view_func=self.user_login)
         # 登录后可用
         self.app.add_url_rule('/user/logout', view_func=self.user_logout)
+        self.app.add_url_rule('/api/models', view_func=self.api_models)
         self.app.add_url_rule('/api/list', view_func=self.api_list)
         self.app.add_url_rule('/api/add', view_func=self.api_add)
         self.app.add_url_rule('/api/del', view_func=self.api_del)
@@ -99,11 +99,21 @@ class WebSever:
         self.server.session_dict.pop(username)
         return json.dumps('success'), 200
 
-    def api_provider_models(self):
+    def api_providers(self):
         """
-        获取支持的服务商.
+        获取全局支持的服务商.
         """
-        return json.dumps(data.Api.get_provider_models()), 200
+        return json.dumps(data.Api.api_providers()), 200
+    
+    def api_models(self):
+        """
+        获取用户可用的模型.
+        """
+        user = self.server.get_user(session.get('username'), session.get('session_id'))
+        if user is None:
+            return json.dumps('invalid_user'), 403
+        models = user.available_models
+        return json.dumps(models), 200
 
     def api_list(self):
         """
@@ -222,22 +232,15 @@ class WebSever:
         prompt = base64.b64decode(request.args.get('p')).decode('utf-8')
         if prompt == '':
             prompt = chat.recv_msg_list[-1].msg
-        models = json.loads(base64.b64decode(
-            request.args.get('ml')).decode('utf-8'))
+        provider_models = json.loads(base64.b64decode(
+            request.args.get('provider_models')).decode('utf-8'))
         send_msg = data.Message('user', user.username, prompt)
         chat.add_msg(send_msg)
+        responses = Api.get_responses(chat, provider_models, user.api_dict)
+        for response in responses:
+            recv_msg = data.Message('assistant', response['model'], responses['message'], responses['code'])
+            chat.add_recv_msg(response['model'], recv_msg)
 
-        for service_provider_name in user.api_dict:
-            api_key = user.api_dict[service_provider_name]
-            model_list = set(
-                user.available_models[service_provider_name]) & set(models)
-            if model_list:
-                api = eval(f"data.{service_provider_name}_Api")(api_key)
-                responses = api.get_responses(chat, model_list)
-                print(responses)
-                for idx, model in enumerate(model_list):
-                    recv_msg = data.Message('assistant', model, responses[idx]['message'], responses[idx]['code'])
-                    chat.add_recv_msg(model, recv_msg)
         return json.dumps(chat.recv_msg_tmp, default=lambda o: o.__dict__()), 200
 
     def chat_regen(self):
