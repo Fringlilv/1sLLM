@@ -107,7 +107,7 @@ class WebSever:
     
     def api_models(self):
         """
-        获取用户可用的模型.
+        获取用户可用的{服务商: 模型列表}.
         """
         user = self.server.get_user(session.get('username'), session.get('session_id'))
         if user is None:

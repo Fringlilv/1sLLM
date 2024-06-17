@@ -21,18 +21,21 @@ class Chat(DB):
         设置标题.
         """
         self.chat_title = title
+        self.save()
 
     def add_msg(self, msg):
         """
         添加消息.
         """
         self.msg_list.append(msg)
+        self.save()
 
     def add_recv_msg(self, model_name, msg):
         """
         添加接收消息.
         """
         self.recv_msg_tmp[model_name] = msg
+        self.save()
 
     def sel_recv_msg(self, model_name):
         """
@@ -40,6 +43,7 @@ class Chat(DB):
         """
         self.msg_list.append(self.recv_msg_tmp[model_name])
         self.recv_msg_tmp = {}
+        self.save()
 
     def __dict__(self):
         res = {'chat_id': self.chat_id,

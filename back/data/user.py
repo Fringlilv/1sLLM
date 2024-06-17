@@ -6,7 +6,7 @@ class User(DB):
     属性:
         api_dict: 服务商名-Api
         chat_dict: 会话id-Chat
-        available_models: 可用模型 
+        available_models: 服务商名-支持的模型列表
     """
 
     def __init__(self, username, password):
@@ -23,12 +23,14 @@ class User(DB):
         添加会话.
         """
         self.chat_dict[chat.chat_id] = chat
+        self.save()
 
     def del_chat(self, chat_id):
         """
         删除会话.
         """
         del self.chat_dict[chat_id]
+        self.save()
 
     def add_api(self, service_provider_name, api_key) -> bool:
         """
@@ -36,12 +38,14 @@ class User(DB):
         """
         self.api_dict[service_provider_name] = api_key
         self.available_models[service_provider_name] = eval(f"{service_provider_name}_Api")(api_key).supported_models
+        self.save()
 
     def del_api(self, service_provider_name):
         """
         删除api.
         """
         del self.api_dict[service_provider_name]
+        self.save()
 
     def _db_dict(self):
         res = {'username': self.username, 'password': self.password,

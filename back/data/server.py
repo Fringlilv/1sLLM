@@ -66,9 +66,6 @@ class Server(DB):
         检查用户名是否存在.
         """
         return uname in self.user_dict
-
-    def load(self, path):
-        pass
-
-    def save(self, path):
+    
+    def _db_dict(self):
         pass
