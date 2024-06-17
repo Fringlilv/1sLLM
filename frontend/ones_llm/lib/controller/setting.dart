@@ -100,11 +100,9 @@ class SettingController extends GetxController {
   }
 
   setApiKeyFromControllers(Map<String, TextEditingController> controllerMap) async {
-    final keys = <String, String>{};
     for (final ctrl in controllerMap.entries) {
-      keys[ctrl.key] = ctrl.value.text;
+      api.setApiKey(ctrl.key, ctrl.value.text);
     }
-    await api.SetApiKey(keys);
   }
 
 }

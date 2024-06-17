@@ -5,6 +5,10 @@ import 'package:get/get.dart';
 
 class SettingPage extends GetResponsiveView {
   SettingPage({super.key});
+  final modelController = Get.find<ModelController>();
+  final settingController = Get.find<SettingController>();
+  final keyControllers = { for (final element in Get.find<ModelController>().modelProviderMap.entries) element.key : TextEditingController() };
+
 
   @override
   Widget? builder() {
@@ -13,17 +17,14 @@ class SettingPage extends GetResponsiveView {
         title: Text('settings'.tr),
       ),
       body: Obx(() {
-        final modelController = Get.find<ModelController>();
-        final settingController = Get.find<SettingController>();
-        final keyControllers = { for (final element in modelController.modelProviderMap.entries) element.key : TextEditingController() };
         settingController.fillApiKeyToControllers(keyControllers);
         return ListView(
           children: [
             const Divider(),
-            const ListTile(
+            ListTile(
               dense: true,
               title: Text('Api Key',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
+                  style: Theme.of(Get.context!).textTheme.titleLarge),
             ),
             ...[
               for (final apiKey in keyControllers.entries)
@@ -32,7 +33,7 @@ class SettingPage extends GetResponsiveView {
                 controller: apiKey.value,
                 decoration: InputDecoration(
                   labelText: apiKey.key,
-                  labelStyle: TextStyle(fontSize: 16, color: Theme.of(Get.context!).colorScheme.onPrimaryContainer.withAlpha(150)),
+                  labelStyle: Theme.of(Get.context!).textTheme.bodyLarge,
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   border: OutlineInputBorder(
@@ -44,12 +45,13 @@ class SettingPage extends GetResponsiveView {
                 ),
             ),
             ],
+            ElevatedButton(onPressed: ()=>settingController.setApiKeyFromControllers(keyControllers), child: Text('updataKey'.tr)),
             
             const Divider(),
             ListTile(
               dense: true,
               title: Text('theme'.tr,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+                  style: Theme.of(Get.context!).textTheme.titleLarge),
             ),
             RadioListTile(
               title: Text('followSystem'.tr),
@@ -79,7 +81,7 @@ class SettingPage extends GetResponsiveView {
             ListTile(
               dense: true,
               title: Text('language'.tr,
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+                  style: Theme.of(Get.context!).textTheme.titleLarge),
             ),
             RadioListTile(
               title: Text('zh'.tr),
