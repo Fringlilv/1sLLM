@@ -76,7 +76,7 @@ class WebSever:
             return json.dumps('invalid_username_or_password'), 403
         password_md5 = hashlib.md5(password.encode('utf-8')).hexdigest()
         # 检查用户名密码
-        # print(f'Login: {username}, {password}')
+        print(f'Login: {username}, {password}')
         if self.server.get_password_md5(username) != password_md5:
             return json.dumps('invalid_username_or_password'), 403
         # 服务器上记录会话信息
@@ -171,6 +171,7 @@ class WebSever:
         """
         获取会话列表.
         """
+        print(session.get('username'), session.get('session_id'))
         user = self.server.get_user(session.get('username'), session.get('session_id'))
         if user is None:
             return json.dumps('invalid_user'), 403

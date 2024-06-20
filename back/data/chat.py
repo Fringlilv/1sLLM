@@ -1,4 +1,4 @@
-from db import DB
+from .db import DB, cached_property, synced_property
 
 class Chat(DB):
     """
@@ -9,61 +9,53 @@ class Chat(DB):
     """
 
     def __init__(self, cid, title):
+        super().__init__('chat')
         self._chat_id = cid
         self._chat_title = title
         self._msg_list = []
         self._recv_msg_tmp = {}
 
-        self._db_id = self._chat_id
-
-    def set_title(self, title):
-        """
-        设置标题.
-        """
-        self._chat_title = title
+        self._db_id = cid
         self.save()
 
-    def add_msg(self, msg):
-        """
-        添加消息.
-        """
-        self._msg_list.append(msg)
-        self.save()
-
-    def add_recv_msg(self, model_name, msg):
-        """
-        添加接收消息.
-        """
-        self._recv_msg_tmp[model_name] = msg
-        self.save()
-
-    def sel_recv_msg(self, model_name):
-        """
-        选择接收消息.
-        """
-        self._msg_list.append(self._recv_msg_tmp[model_name])
-        self._recv_msg_tmp = {}
-        self.save()
-
+    @cached_property
     def get_chat_id(self):
-        """
-        获取chat_id.
-        """
         return self._chat_id
 
+    @cached_property
+    def get_chat_title(self):
+        return self._chat_title
+
+    @cached_property
+    def get_msg_list(self):
+        return self._msg_list
+
+    @cached_property
     def get_recv_msg_tmp(self):
-        """
-        获取recv_msg_tmp.
-        """
         return self._recv_msg_tmp
 
-    def __dict__(self):
-        res = {'chat_id': self._chat_id,
-               'chat_title': self._chat_title, 'msg_list': self._msg_list}
-        if self._recv_msg_tmp:
-            res['recv_msg_tmp'] = self._recv_msg_tmp
-        return res
+    @synced_property
+    def set_title(self, title):
+        self._chat_title = title
+
+    @synced_property
+    def add_msg(self, msg):
+        self._msg_list.append(msg)
+
+    @synced_property
+    def add_recv_msg(self, model_name, msg):
+        self._recv_msg_tmp[model_name] = msg
+
+    @synced_property
+    def sel_recv_msg(self, model_name):
+        self._msg_list.append(self._recv_msg_tmp[model_name])
+        self._recv_msg_tmp = {}
 
     def _db_dict(self):
-        return self.__dict__()
-
+        res = {
+            'chat_id': self._chat_id,
+            'chat_title': self._chat_title,
+            'msg_list': self._msg_list,
+            'recv_msg_tmp': self._recv_msg_tmp
+        }
+        return res

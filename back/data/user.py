@@ -1,5 +1,4 @@
-from db import DB
-
+from .db import DB, cached_property, synced_property
 
 class User(DB):
     """
@@ -10,89 +9,66 @@ class User(DB):
         available_models: 服务商名-支持的模型列表
     """
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, api_dict={}, chat_dict={}, available_models={}):
+        super().__init__('user')
+        self._db_id = username
         self._username = username
         self._password = password
-        self._api_dict = {}
-        self._chat_dict = {}
-        self._available_models = {}
+        self._api_dict = api_dict
+        self._chat_dict = chat_dict
+        self._available_models = available_models
+        self.save()
 
-        self._db_id = self._username
+    @cached_property
+    def get_username(self):
+        return self._username
 
+    @cached_property
+    def get_password(self):
+        return self._password
+
+    @cached_property
+    def get_available_models(self):
+        return self._available_models
+
+    @cached_property
+    def get_api_dict(self):
+        return self._api_dict
+
+    @cached_property
+    def get_chat_dict(self):
+        return self._chat_dict
+
+    def get_chat(self, chat_id):
+        return self.get_chat_dict().get(chat_id)
+
+    @synced_property
     def add_chat(self, chat):
-        """
-        添加会话.
-        """
         self._chat_dict[chat.get_chat_id()] = chat
-        self.save()
 
+    @synced_property
     def del_chat(self, chat_id):
-        """
-        删除会话.
-        """
         del self._chat_dict[chat_id]
-        self.save()
 
-    def add_api(self, service_provider_name, api_key) -> bool:
-        """
-        添加/覆盖api.
-        """
+    @synced_property
+    def add_api(self, service_provider_name, api_key):
         self._api_dict[service_provider_name] = api_key
         self._available_models[service_provider_name] = eval(
             f"{service_provider_name}_Api")(api_key).supported_models
-        self.save()
 
+    @synced_property
     def del_api(self, service_provider_name):
-        """
-        删除api.
-        """
         del self._api_dict[service_provider_name]
-        self.save()
+        del self._available_models[service_provider_name]
 
-    def get_username(self):
-        """
-        获取用户名.
-        """
-        return self._username
-
-    def get_password(self):
-        """
-        获取密码.
-        """
-        return self._password
-
-    def get_available_models(self):
-        """
-        获取支持的模型列表.
-        """
-        return self._available_models
-
-    def get_api_dict(self):
-        """
-        获取api字典.
-        """
-        return self._api_dict
-
-    def get_chat(self, cid):
-        """
-        获取chat.
-        """
-        return self._chat_dict.get(cid)
-
-    def get_api(self, model_name):
-        """
-        获取api.
-        """
-        return self._api_dict.get(model_name)
-
-    def get_chat_dict(self):
-        """
-        获取chat字典.
-        """
-        return self._chat_dict
+    def get_api(self, service_provider_name):
+        return self.get_api_dict().get(service_provider_name)
 
     def _db_dict(self):
-        res = {'username': self._username, 'password': self._password,
-               'api_dict': self._api_dict, 'cid': list(self._chat_dict.keys())}
-
-        return res
+        return {
+            'username': self._username,
+            'password': self._password,
+            'api_dict': self._api_dict,
+            'chat_dict': {k: v.get_chat_id() for k, v in self._chat_dict.items()},
+            'available_models': self._available_models
+        }

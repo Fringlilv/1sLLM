@@ -1,11 +1,11 @@
 import hashlib
 import random
 import time
-from db import DB
-from chat import Chat
-from user import User
+from .chat import Chat
+from .user import User
+from pymongo import MongoClient
 
-class Server(DB):
+class Server:
     """
     服务器所需的一切信息.
     属性:
@@ -14,8 +14,33 @@ class Server(DB):
     """
 
     def __init__(self):
+        super().__init__('server')
+        self._db_id = 'server'
         self._user_dict = {}
         self._session_dict = {}
+
+        # 从数据库中加载数据
+        self.load_data_from_db()
+        
+    def load_data_from_db(self):
+        """
+        从数据库中加载数据.
+        """
+        # 连接数据库
+        client = MongoClient('mongodb://localhost:27017')
+        db = client['1sLLM']
+        cursor = db['user'].find({})
+        for user_data in cursor:
+            username = user_data.get('username')
+            password = user_data.get('password')
+            api_dict = user_data.get('api_dict')
+            chat_dict = user_data.get('chat_dict')
+            available_models = user_data.get('available_models')
+            user = User(username=username, password=password, api_dict=api_dict, chat_dict=chat_dict, available_models=available_models)
+            self._user_dict[username] = user
+        # cursor = db['server'].find({})
+        # for server_data in cursor:
+        #     self._session_dict = server_data.get('session_dict')
 
     def add_user(self, user : User):
         """
@@ -53,6 +78,7 @@ class Server(DB):
         """
         检查session_id.
         """
+        print(uname, sid)
         if uname is None or sid is None:
             return None
         if self._session_dict.get(uname) == sid:
@@ -82,6 +108,8 @@ class Server(DB):
         删除session_dict.
         """
         self._session_dict.pop(key)
-
-    def _db_dict(self):
-        pass
+    
+    # def _db_dict(self):
+    #     return {
+    #         'session_dict': self._session_dict
+    #     }
