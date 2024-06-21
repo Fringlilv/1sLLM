@@ -47,29 +47,21 @@ def test_del_chat(setup_user):
     chat_dict = user.get_chat_dict()
     assert 'chat001' not in chat_dict
 
-# def test_add_api(setup_user, monkeypatch):
-#     user = setup_user
+def test_add_api(setup_user, monkeypatch):
+    user = setup_user
 
-#     # Mock the external API class
-#     class MockApi:
-#         def __init__(self, api_key):
-#             self.api_key = api_key
-#             self.supported_models = ['model1', 'model2']
+    # Add API to the user
+    user.add_api('OpenAI_agent', 'sk-yvEwm4Ho60mnUvzUQSByjc8aCWWUFS4glzEsq02M8EKfJ5Rh')
+    user.add_api('Qwen', '')
+    # Check if the API is added correctly
+    api_dict = user.get_api_dict()
+    assert 'OpenAI_agent' in api_dict
+    assert api_dict['OpenAI_agent'] == 'sk-yvEwm4Ho60mnUvzUQSByjc8aCWWUFS4glzEsq02M8EKfJ5Rh'
 
-#     monkeypatch.setattr('data.user.service_provider_name_Api', MockApi)
-
-#     # Add API to the user
-#     user.add_api('service_provider_name', 'api_key_123')
-
-#     # Check if the API is added correctly
-#     api_dict = user.get_api_dict()
-#     assert 'service_provider_name' in api_dict
-#     assert api_dict['service_provider_name'] == 'api_key_123'
-
-#     # Check if the available models are updated correctly
-#     available_models = user.get_available_models()
-#     assert 'service_provider_name' in available_models
-#     assert available_models['service_provider_name'] == ['model1', 'model2']
+    # Check if the available models are updated correctly
+    available_models = user.get_available_models()
+    assert 'OpenAI_agent' in available_models
+    # assert available_models['OpenAI_agent'] == ['model1', 'model2']
 
 # def test_del_api(setup_user, monkeypatch):
 #     user = setup_user

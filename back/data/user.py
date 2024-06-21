@@ -1,5 +1,6 @@
 from .db import DB
 from .chat import Chat
+from api import *
 
 class User(DB):
     """
@@ -65,7 +66,8 @@ class User(DB):
         return self.get('api_dict')
     
     def get_chat_dict(self):
-        return self.get('chat_dict')
+        chat_dict = self.get('chat_dict')
+        return {k: Chat()._from_db_dict(v) for k, v in chat_dict.items()}
 
     def get_chat(self, chat_id):
         return self.get_chat_dict().get(chat_id)
@@ -82,14 +84,20 @@ class User(DB):
         current_chat_dict = {chat_id: Chat()._to_db_dict(chat) for chat_id, chat in current_chat_dict.items()}
         self.update('chat_dict', current_chat_dict)
 
-    def add_api(self, service_provider_name, api_key):
+    def add_api(self, service_provider_name, api_key) -> bool:
         current_api_dict = self.get_api_dict()
         current_api_dict[service_provider_name] = api_key
-        self.update('api_dict', current_api_dict)
         current_available_models = self.get_available_models()
-        current_available_models[service_provider_name] = eval(
-            f"{service_provider_name}_Api")(api_key).supported_models
-        self.update('available_models', current_available_models)
+        try: 
+            current_available_models[service_provider_name] = eval(
+                f"{service_provider_name}_Api")(api_key).supported_models
+        except Exception as e:
+            print(e)
+            return False
+        else:
+            self.update('api_dict', current_api_dict)
+            self.update('available_models', current_available_models)
+            return True
 
     def del_api(self, service_provider_name):
         current_api_dict = self.get_api_dict()

@@ -134,7 +134,8 @@ class WebSever:
         service_provider_name = base64.b64decode(
             request.args.get('name')).decode('utf-8')
         api_key = base64.b64decode(request.args.get('key')).decode('utf-8')
-        user.add_api(service_provider_name, api_key)
+        if not user.add_api(service_provider_name, api_key):
+            return json.dumps('invalid_service_provider_name_or_key'), 403
         return json.dumps('success'), 200
 
     def api_del(self):
