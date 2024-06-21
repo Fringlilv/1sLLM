@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
 import 'package:ones_llm/components/chat.dart';
@@ -16,14 +15,14 @@ class MyHomePage extends GetResponsiveView {
         title: Text('appTitle'.tr),
       ),
       drawer: const ConversationWindow(),
-      body: const ChatWindow(),
+      body: ChatWindow(),
     );
   }
 
   @override
   Widget? desktop() {
     print('desktop');
-    return const Scaffold(
+    return Scaffold(
       body: Row(
         children: [
           ConversationWindow(),

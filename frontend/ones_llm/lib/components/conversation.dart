@@ -64,7 +64,6 @@ class ConversationWindow extends StatelessWidget {
                             trailing: Builder(builder: (context) {
                               return IconButton(
                                   onPressed: () {
-                                    //显示一个overlay操作
                                     _showConversationDetail(context, index);
                                   },
                                   icon: Icon(

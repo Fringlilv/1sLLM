@@ -55,7 +55,7 @@ class Message {
   }
 }
 
-enum LoginResponse { success, badUser, badPasswd, unknown }
+enum LoginResponse { success, badUserOrPassed, unknown }
 
 class ApiService extends GetxService {
   late Dio _dio;
@@ -68,16 +68,15 @@ class ApiService extends GetxService {
     if (kIsWeb) {
       var adapter = BrowserHttpClientAdapter(withCredentials: true);
       _dio.httpClientAdapter = adapter;
+    } else {
+      _dio.interceptors.add(CookieManager(PersistCookieJar()));
     }
     _dio.options.baseUrl = baseUrl;
     _dio.options.connectTimeout = const Duration(milliseconds: 10000);
     _dio.options.receiveTimeout = const Duration(milliseconds: 10000);
     _dio.options.headers["Accept"] = "application/json";
-    // _dio.options.headers["X-Requested-With"] = "XMLHttpRequest";
-    // _dio.options.headers["Access-Control-Allow-Origin"] = "*";
     _dio.interceptors.add(LogInterceptor(responseBody: true));
     _dio.interceptors.add(errorInterceptor);
-    _dio.interceptors.add(CookieManager(PersistCookieJar()));
   }
 
   Future<T> _get<T>(String path,
@@ -89,7 +88,7 @@ class ApiService extends GetxService {
       final response = await _dio.get<String>(
         path,
         queryParameters: queryParameters?.map(
-            (key, value) => MapEntry(key, base64Encode(utf8.encode(value)))),
+            (key, value) => MapEntry(key, base64Encode(utf8.encode(value is String?value:jsonEncode(value))))),
         options: options,
         cancelToken: cancelToken,
         onReceiveProgress: onReceiveProgress,
@@ -130,6 +129,8 @@ class ApiService extends GetxService {
     switch (response) {
       case 'success':
         return LoginResponse.success;
+      case 'invalid_username_or_password':
+        return LoginResponse.badUserOrPassed;
       default:
         return LoginResponse.unknown;
     }
@@ -171,17 +172,21 @@ class ApiService extends GetxService {
   }
 
   Future<List<String>> getAllProviders() async {
-    final response = await _get<List<String>>(
+    final response = await _get<List<dynamic>>(
       '/api/providers',
     );
-    return response;
+    return response.cast();
   }
 
   Future<Map<String, List<String>>> getAvailableProviderModels() async {
     final response = await _get<Map<String, dynamic>>(
       '/api/models',
     );
-    return Map.from(response);
+    final Map<String, List<String>> res = {};
+    for (var element in response.entries) {
+      res[element.key] = (element.value as List<dynamic>).map((item) => item as String).toList();
+    }
+    return res;
   }
 
   Future<List<Conversation>> getConversations() async {

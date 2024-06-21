@@ -10,9 +10,9 @@ import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/controller/message.dart';
 import 'package:ones_llm/controller/model.dart';
 import 'package:ones_llm/controller/setting.dart';
-import 'package:ones_llm/controller/user.dart';
 import 'package:ones_llm/pages/home.dart';
 import 'package:ones_llm/services/api.dart';
+import 'package:ones_llm/services/local.dart';
 
 void main() async {
   await GetStorage.init();
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(ApiService());
-    Get.put(UserController());
+    Get.put(LocalService());
     Get.put(SettingController());
     Get.put(ModelController());
     Get.put(ConversationController());

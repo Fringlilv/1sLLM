@@ -19,7 +19,9 @@ final errorInterceptor = InterceptorsWrapper(
         // 服务器响应错误处理
         switch (error.response!.statusCode) {
           case 403:
-            Get.dialog(const LoginDialog());
+            Get.dialog(const LoginDialog());break;
+          case 401:
+            handler.resolve(error.response!);
         }
         break;
       case DioExceptionType.cancel:

@@ -3,29 +3,22 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:ones_llm/components/chat/modelPanel.dart';
-import 'package:ones_llm/components/chat/selectCard.dart';
+import 'package:ones_llm/components/chat/model_panel.dart';
+import 'package:ones_llm/components/chat/select_card.dart';
 
 import 'package:ones_llm/controller/model.dart';
-import 'package:ones_llm/controller/user.dart';
 import 'package:ones_llm/components/markdown.dart';
-import 'package:ones_llm/components/chat/messageCard.dart';
+import 'package:ones_llm/components/chat/message_card.dart';
 import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/controller/message.dart';
 // import 'package:flutter_chatgpt/controller/settings.dart';
 import 'package:ones_llm/services/api.dart';
 
-class ChatWindow extends StatefulWidget {
-  const ChatWindow({super.key});
-
-  @override
-  State<ChatWindow> createState() => _ChatWindowState();
-}
-
-class _ChatWindowState extends State<ChatWindow> {
+class ChatWindow extends StatelessWidget {
   final _textController = TextEditingController();
-  final _formKey = GlobalKey<FormState>(); // 定义一个 GlobalKey
   final _scrollController = ScrollController();
+
+  ChatWindow({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -144,8 +137,10 @@ class _ChatWindowState extends State<ChatWindow> {
                         onPressed:
                             Get.find<MessageController>().selecting.isTrue
                                 ? null
-                                : () => Get.dialog(
-                                    const Dialog(child: ModelSelectWindow())),
+                                : () {
+                                  Get.find<ModelController>().getAvailableProviderModels();
+                                  Get.dialog(
+                                    const Dialog(child: ModelSelectWindow()));},
                         style: ElevatedButton.styleFrom(
                           shape: const RoundedRectangleBorder(
                               borderRadius:
@@ -187,59 +182,6 @@ class _ChatWindowState extends State<ChatWindow> {
           conversationId, message, modelController.selected());
       _textController.text = '';
     }
-  }
-
-  // void _selectMessage(Message message) async {
-  //   final MessageController messageController = Get.find();
-  //   final ConversationController conversationController = Get.find();
-  //   messageController.selectMessage(
-  //       message);
-  // }
-
-  Widget _buildSelectingCard(Message message, void Function() onSelect) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const SizedBox(
-              width: 10,
-            ),
-            const FaIcon(FontAwesomeIcons.robot),
-            const SizedBox(
-              width: 5,
-            ),
-            Text(message.role),
-            const SizedBox(
-              width: 10,
-            ),
-            ElevatedButton(
-              onPressed: onSelect,
-              child: Text('selectResponse'.tr),
-            ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Flexible(
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                margin: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Card(
-                  color: Theme.of(context).colorScheme.surfaceVariant,
-                  elevation: 8,
-                  child: Markdown(text: message.text),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
   }
 
   KeyEventResult _handleKeyEvent(node, event) {

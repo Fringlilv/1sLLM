@@ -74,7 +74,7 @@ class ModelController extends GetxController {
     final l = { for (var element in modelProviderMap.keys) element : <String>[] };
     for (final element in modelProviderMap.values) {
       for (final model in element.modelMap.values) {
-        l[element.name]?.add(model.name);
+        if(model.selected) l[element.name]?.add(model.name);
       }
     }
     l.removeWhere((k, v)=>v.isEmpty);

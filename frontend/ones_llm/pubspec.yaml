@@ -51,7 +51,8 @@ dependencies:
   package_info_plus: ^8.0.0
   expandable_page_view: ^1.0.17
   card_swiper: ^3.0.1
-  expandable: 
+  expandable: ^5.0.1
+  fluttertoast: ^8.2.6
 
 dev_dependencies:
   flutter_test:

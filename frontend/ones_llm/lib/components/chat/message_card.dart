@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:ones_llm/services/api.dart';
-import 'package:ones_llm/controller/user.dart';
 import 'package:ones_llm/components/markdown.dart';
+import 'package:ones_llm/services/local.dart';
 
 class MessageCard extends StatelessWidget {
   final Message message;
@@ -12,7 +12,7 @@ const MessageCard({ super.key, required this.message});
 
   @override
   Widget build(BuildContext context){
-    final userName = Get.find<UserController>().userName.value;
+    final userName = Get.find<LocalService>().userName;
     if (message.role == userName) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.end,

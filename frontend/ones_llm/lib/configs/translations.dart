@@ -44,6 +44,7 @@ class OnesLLMTranslations extends Translations {
           "darkMode": "dart mode",
           "toLogin": "have a account? go to login",
           "toSignup": "no account? go to signup",
+          "badUserOrPassed": "wrong user or password",
         },
         'zh_CN': {
           "appTitle": "1sLLM",
@@ -86,6 +87,7 @@ class OnesLLMTranslations extends Translations {
           "darkMode": "暗黑模式",
           "toLogin": "已有账号？去登陆",
           "toSignup": "没有账号？去注册",
+          "badUserOrPassed": "用户名或密码错误",
         }
       };
 }

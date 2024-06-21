@@ -11,7 +11,11 @@ class ModelSelectWindow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ModelController>(builder: (controller) {
+    return GetBuilder<ModelController>(
+      initState: (state) {
+        state.controller?.getAvailableProviderModels();
+      },
+      builder: (controller) {
       return SingleChildScrollView(
         child: Column(
           children: controller.modelProviderMap.values.map((provider) {

@@ -1,182 +1,127 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:ones_llm/controller/conversation.dart';
 
-import 'package:ones_llm/controller/user.dart';
+import 'package:ones_llm/components/basic/radius_widgets.dart';
+import 'package:ones_llm/controller/conversation.dart';
+import 'package:ones_llm/controller/login.dart';
 
 class _LoginWindow extends StatelessWidget {
   _LoginWindow({super.key});
 
-  final _userController = TextEditingController();
-  final _pdController = TextEditingController();
-  final _pd2Controller = TextEditingController();
-  final userController = Get.find<UserController>();
-  final login = Get.find<UserController>().statu;
+  // final login = Get.find<UserController>().statu;
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => 
-      Container(
-        padding: const EdgeInsets.all(50),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer.withAlpha(20),
-          // border: const Border(right: BorderSide(width: .1)),
-          borderRadius: BorderRadius.circular(30),
-        ),
-        constraints: BoxConstraints(maxWidth: 500, maxHeight: login.value == LoginStatu.signUp?500:400),
-        child: Column(
-          children: [
-            Expanded(
-              flex: 2,
-              child: TextFormField(
-                style: const TextStyle(fontSize: 16),
-                controller: _userController,
-                decoration: InputDecoration(
-                  labelText: "username".tr,
-                  labelStyle: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onPrimaryContainer.withAlpha(150)),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(50),
-                    // borderSide: BorderSide.none,
-                  ),
-                  fillColor: Theme.of(context).colorScheme.background.withAlpha(150),
-                ),
+    return GetBuilder<LoginController>(
+      init: LoginController(),
+        builder: (controller) => Container(
+              padding: const EdgeInsets.all(50),
+              decoration: BoxDecoration(
+                color: Theme.of(context)
+                    .colorScheme
+                    .primaryContainer
+                    .withAlpha(20),
+                // border: const Border(right: BorderSide(width: .1)),
+                borderRadius: BorderRadius.circular(30),
               ),
-            ),
-            const Expanded(flex: 1, child: SizedBox()),
-            Expanded(
-              flex: 2,
-              child: TextFormField(
-                style: const TextStyle(fontSize: 16),
-                controller: _pdController,
-                decoration: InputDecoration(
-                  labelText: "password".tr,
-                  labelStyle: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onPrimaryContainer.withAlpha(150)),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(50),
-                    // borderSide: BorderSide.none,
+              constraints: BoxConstraints(
+                  maxWidth: 500,
+                  maxHeight: controller.statu == LoginStatu.signUp ? 500 : 400),
+              child: Column(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: RadiusTextFormField(
+                      controller: controller.userController,
+                      labelText: "username".tr,
+                    ),
                   ),
-                  fillColor: Theme.of(context).colorScheme.background.withAlpha(150),
-                ),
-              ),
-            ),
-            login.value == LoginStatu.signUp?
-            const Expanded(flex: 1, child: SizedBox()):SizedBox(),
-            login.value == LoginStatu.signUp?
-              Expanded(
-              flex: 2,
-              child: TextFormField(
-                style: const TextStyle(fontSize: 16),
-                controller: _pd2Controller,
-                decoration: InputDecoration(
-                  labelText: "password2".tr,
-                  labelStyle: TextStyle(fontSize: 16, color: Theme.of(context).colorScheme.onPrimaryContainer.withAlpha(150)),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(50),
-                    // borderSide: BorderSide.none,
+                  const Expanded(flex: 1, child: SizedBox()),
+                  Expanded(
+                    flex: 2,
+                    child: RadiusTextFormField(
+                      controller: controller.pdController,
+                      labelText: "password".tr,
+                    ),
                   ),
-                  filled: true,
-                  fillColor: Theme.of(context).colorScheme.background.withAlpha(150),
-                ),
-              ),
-            ):SizedBox(),
-            Expanded(
-              flex: 1,
-              child:
-                  Obx(() => Text(userController.failmessage.value)),
-            ),
-            Expanded(
-              flex: 1,
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: login.value == LoginStatu.signUp?_toLogin:_toSignUp,
-                  style: ElevatedButton.styleFrom(
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50))),
-                    padding: EdgeInsets.zero,
+                  controller.statu == LoginStatu.signUp
+                      ? const Expanded(flex: 1, child: SizedBox())
+                      : const SizedBox(),
+                  controller.statu == LoginStatu.signUp
+                      ? Expanded(
+                          flex: 2,
+                          child: RadiusTextFormField(
+                            controller: controller.pd2Controller,
+                            labelText: "password2".tr,
+                          ),
+                        )
+                      : const SizedBox(),
+                  const Expanded(flex: 1, child: SizedBox()),
+                  Expanded(
+                    flex: 1,
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: controller.statu == LoginStatu.signUp
+                            ? controller.toLogin
+                            : controller.toSignUp,
+                        style: ElevatedButton.styleFrom(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50))),
+                          padding: EdgeInsets.zero,
+                        ),
+                        child: Text(controller.statu == LoginStatu.signUp
+                            ? 'toLogin'.tr
+                            : 'toSignup'.tr),
+                      ),
+                    ),
                   ),
-                  child: Text(login.value == LoginStatu.signUp?'toLogin'.tr:'toSignup'.tr),
-                ),
-              ),
-            ),
-            const Expanded(flex: 1, child: SizedBox()),
-            Expanded(
-              flex: 1,
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _onTapLogin,
-                  style: ElevatedButton.styleFrom(
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50))),
-                    padding: EdgeInsets.zero,
+                  const Expanded(flex: 1, child: SizedBox()),
+                  Expanded(
+                    flex: 1,
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: controller.statu == LoginStatu.signUp
+                            ? controller.signUp
+                            : controller.login,
+                        style: ElevatedButton.styleFrom(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50))),
+                          padding: EdgeInsets.zero,
+                        ),
+                        child: Text(controller.statu == LoginStatu.signUp
+                            ? 'signup'.tr
+                            : 'login'.tr),
+                      ),
+                    ),
                   ),
-                  child: Text(login.value == LoginStatu.signUp?'signup'.tr:'login'.tr),
-                ),
+                ],
               ),
-            ),
-          ],
-        ),
-    ));
-  }
-
-  void _onTapLogin() {
-    final username = _userController.text.trim();
-    final password = _pdController.text.trim();
-    if(login.value != LoginStatu.signUp) {
-      userController.login(username, password, () {
-      Get.back(); 
-      Get.find<ConversationController>().getConversations();
-    });
-    } else {
-      if(_pd2Controller.text.trim()!=password){
-        userController.failmessage.value = "notSame";
-        return;
-      }
-      userController.signUp(username, password, () {});
-    }
-  }
-
-  void _toSignUp() {
-    userController.statu.value = LoginStatu.signUp;
-    _userController.text = '';
-    _pdController.text = '';
-    _pd2Controller.text = '';
-
-  }
-
-  void _toLogin() {
-    userController.statu.value = LoginStatu.notLogin;
-    _userController.text = '';
-    _pdController.text = '';
-    _pd2Controller.text = '';
+            ));
   }
 }
 
 class LoginWindow extends StatelessWidget {
-const LoginWindow({ super.key });
+  const LoginWindow({super.key});
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Container(
-      alignment: Alignment.center,
-      color: Theme.of(context).colorScheme.primaryContainer.withAlpha(50),
-      child: _LoginWindow()
-    );
+        alignment: Alignment.center,
+        color: Theme.of(context).colorScheme.primaryContainer.withAlpha(50),
+        child: _LoginWindow());
   }
 }
 
 class LoginDialog extends StatelessWidget {
-const LoginDialog({ super.key });
+  const LoginDialog({super.key});
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: Theme.of(context).colorScheme.background,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),

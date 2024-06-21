@@ -22,10 +22,6 @@ class SettingController extends GetxController {
   void onInit() async {
     // await getThemeModeFromPreferences();
     await getLocaleFromPreferences();
-    // await getOpenAiBaseUrlFromPreferences();
-    // await getOpenAiKeyFromPreferences();
-    // await getLLmFromPreferences();
-    // await getGptModelFromPreferences();
     await initAppVersion();
     super.onInit();
   }

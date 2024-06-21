@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
-import 'package:ones_llm/controller/user.dart';
 
 import 'package:ones_llm/services/api.dart';
+import 'package:ones_llm/services/local.dart';
 
 
 class MessageController extends GetxController { 
@@ -32,7 +32,7 @@ class MessageController extends GetxController {
   ) async {
     selecting.value = true;
     final messages = await api.getMessages(conversationId);
-    final sendedMessage = Message(conversationId: conversationId, text: text, role: Get.find<UserController>().userName.value);
+    final sendedMessage = Message(conversationId: conversationId, text: text, role: Get.find<LocalService>().userName);
     messageList.value = [...messages['msgList']!, sendedMessage];
 
     final newMessages = await api.sendMessage(conversationId, text, selectProviderModels);
