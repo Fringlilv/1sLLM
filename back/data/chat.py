@@ -1,4 +1,5 @@
-from .db import DB, cached_property, synced_property
+from .db import DB
+from .message import Message
 
 class Chat(DB):
     """
@@ -8,54 +9,75 @@ class Chat(DB):
         recv_msg_tmp: 模型名-Msg, 最后一次回答的接收消息
     """
 
-    def __init__(self, cid, title):
-        super().__init__('chat')
-        self._chat_id = cid
-        self._chat_title = title
-        self._msg_list = []
-        self._recv_msg_tmp = {}
+    def __init__(self, cid=None, title=None, msg_list=[], recv_msg_tmp={}):
+        super().__init__(
+            set_name='chat',
+            db_id=cid,
+            db_dict={
+                'chat_id': cid,
+                'chat_title': title,
+                'msg_list': msg_list,
+                'recv_msg_tmp': recv_msg_tmp
+            }
+        )
 
-        self._db_id = cid
-        self.save()
-
-    @cached_property
-    def get_chat_id(self):
-        return self._chat_id
-
-    @cached_property
-    def get_chat_title(self):
-        return self._chat_title
-
-    @cached_property
-    def get_msg_list(self):
-        return self._msg_list
-
-    @cached_property
-    def get_recv_msg_tmp(self):
-        return self._recv_msg_tmp
-
-    @synced_property
-    def set_title(self, title):
-        self._chat_title = title
-
-    @synced_property
-    def add_msg(self, msg):
-        self._msg_list.append(msg)
-
-    @synced_property
-    def add_recv_msg(self, model_name, msg):
-        self._recv_msg_tmp[model_name] = msg
-
-    @synced_property
-    def sel_recv_msg(self, model_name):
-        self._msg_list.append(self._recv_msg_tmp[model_name])
-        self._recv_msg_tmp = {}
-
-    def _db_dict(self):
-        res = {
-            'chat_id': self._chat_id,
-            'chat_title': self._chat_title,
-            'msg_list': self._msg_list,
-            'recv_msg_tmp': self._recv_msg_tmp
+    @staticmethod
+    def _to_db_dict(obj) -> dict:
+        '''
+        将对象转换为可保存至mongodb的字典.
+        '''
+        return {
+            'chat_id': obj.get_chat_id(),
+            'chat_title': obj.get_chat_title(),
+            'msg_list': [msg._to_db_dict() for msg in obj.get_msg_list()],
+            'recv_msg_tmp': {model_name: msg._to_db_dict() for model_name, msg in obj.get_recv_msg_tmp().items()}
         }
-        return res
+    
+    @staticmethod
+    def _from_db_dict(db_dict: dict) -> None:
+        chat_id = db_dict['chat_id']
+        chat_title = db_dict['chat_title']
+        msg_list = [Message()._from_db_dict(msg) for msg in db_dict['msg_list']]
+        recv_msg_tmp = {model_name: Message()._from_db_dict(msg) for model_name, msg in db_dict['recv_msg_tmp'].items()}
+        
+        return {
+            'chat_id': chat_id,
+            'chat_title': chat_title,
+            'msg_list': msg_list,
+            'recv_msg_tmp': recv_msg_tmp
+        }
+
+    def get_chat_id(self):
+        return self.get('chat_id')
+
+    def get_chat_title(self):
+        return self.get('chat_title')
+
+    def get_msg_list(self):
+        return self.get('msg_list')
+
+    def get_recv_msg_tmp(self):
+        return self.get('recv_msg_tmp')
+
+    def set_title(self, title):
+        self.update('chat_title', title)
+
+    def add_msg(self, msg):
+        current_msg_list = self.get_msg_list()
+        current_msg_list.append(msg)
+        current_msg_list = [msg._to_db_dict() for msg in current_msg_list]
+        self.update('msg_list', current_msg_list)
+
+    def add_recv_msg(self, model_name, msg):
+        current_recv_msg_tmp = self.get_recv_msg_tmp()
+        current_recv_msg_tmp[model_name] = msg
+        current_recv_msg_tmp = {model_name: msg._to_db_dict() for model_name, msg in current_recv_msg_tmp.items()}
+        self.update('recv_msg_tmp', current_recv_msg_tmp)
+
+    def sel_recv_msg(self, model_name):
+        current_recv_msg_tmp = self.get_recv_msg_tmp()
+        current_msg_list = self.get_msg_list()
+        current_msg_list.append(current_recv_msg_tmp[model_name])
+        current_msg_list = [msg._to_db_dict() for msg in current_msg_list]
+        self.update('msg_list', current_msg_list)
+        self.update('recv_msg_tmp', {})
