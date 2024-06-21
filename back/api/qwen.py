@@ -35,13 +35,13 @@ class Qwen_Api(Api):
 
     def _get_response(self, chat, model_id):
         try:
-            msg_list = [msg.to_role_dict() for msg in chat.msg_list]
-            completion = self.client.chat.create(
+            msg_list = [msg.to_role_dict() for msg in chat.get_msg_list()]
+            completion = self.client.completions.create(
                 model=model_id,
-                messages=msg_list
+                prompt=msg_list,
             )
             data = {'model': model_id, 'code': 1, 'message': completion.choices[0].message.content}
         except Exception as e:
             print(e)
-            data = {'model': model_id, 'code': 0, 'message': e}
+            data = {'model': model_id, 'code': 0, 'message': str(e)}
         return data

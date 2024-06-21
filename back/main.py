@@ -73,12 +73,12 @@ class WebSever:
         username = base64.b64decode(request.args.get('user')).decode('utf-8')
         password = base64.b64decode(request.args.get('pd')).decode('utf-8')
         if username is None or password is None:
-            return json.dumps('invalid_username_or_password'), 403
+            return json.dumps('invalid_username_or_password'), 401
         password_md5 = hashlib.md5(password.encode('utf-8')).hexdigest()
         # 检查用户名密码
         print(f'Login: {username}, {password}')
         if self.server.get_password_md5(username) != password_md5:
-            return json.dumps('invalid_username_or_password'), 403
+            return json.dumps('invalid_username_or_password'), 401
         # 服务器上记录会话信息
         sid = self.server.gen_session_id(username)
         self.server.set_session_dict(username, sid)
@@ -135,7 +135,7 @@ class WebSever:
             request.args.get('name')).decode('utf-8')
         api_key = base64.b64decode(request.args.get('key')).decode('utf-8')
         if not user.add_api(service_provider_name, api_key):
-            return json.dumps('invalid_service_provider_name_or_key'), 403
+            return json.dumps('invalid_service_provider_name_or_key'), 200
         return json.dumps('success'), 200
 
     def api_del(self):
@@ -176,7 +176,7 @@ class WebSever:
         user = self.server.get_user(session.get('username'), session.get('session_id'))
         if user is None:
             return json.dumps('invalid_user'), 403
-        return json.dumps(user.get_chat_dict(), default=lambda o: o.__dict__()), 200
+        return json.dumps(user.get_chat_dict(), default=lambda o: o._to_db_dict(o)), 200
 
     def chat_new(self):
         """
@@ -201,8 +201,8 @@ class WebSever:
         chat = self.server.get_chat(user, base64.b64decode(
             request.args.get('cid')).decode('utf-8'))
         if chat is None:
-            return json.dumps('invalid_chat_id'), 403
-        return json.dumps(chat, default=lambda o: o.__dict__()), 200
+            return json.dumps('invalid_chat_id'), 200
+        return json.dumps(chat, default=lambda o: o._to_db_dict(o)), 200
 
     def chat_del(self):
         """
@@ -237,10 +237,11 @@ class WebSever:
         send_msg = data.Message('user', user.get_username(), prompt)
         chat.add_msg(send_msg)
         responses = Api.get_responses(chat, provider_models, user.get_api_dict())
+        print(responses)
         for response in responses:
-            recv_msg = data.Message('assistant', response['model'], responses['message'], responses['code'])
+            recv_msg = data.Message('assistant', response['model'], response['message'], response['code'])
             chat.add_recv_msg(response['model'], recv_msg)
-
+        print(chat.get_recv_msg_tmp())
         return json.dumps(chat.get_recv_msg_tmp(), default=lambda o: o.__dict__()), 200
 
     # def chat_regen(self):
@@ -263,7 +264,7 @@ class WebSever:
     #         if api is not None:
     #             recv_msg.msg = api.get_response(chat)
     #         chat.add_recv_msg(model_name, recv_msg)
-    #     return json.dumps(chat._recv_msg_tmp, default=lambda o: o.__dict__()), 200
+    #     return json.dumps(chat._recv_msg_tmp, default=lambda o: o._to_db_dict(o)), 200
 
     def chat_sel(self):
         """
@@ -278,7 +279,7 @@ class WebSever:
             return json.dumps('invalid_chat_id'), 403
         model_name = base64.b64decode(request.args.get('name')).decode('utf-8')
         if model_name not in chat.get_recv_msg_tmp():
-            return json.dumps('invalid_model_name'), 403
+            return json.dumps('invalid_model_name'), 200
         chat.sel_recv_msg(model_name)
         return json.dumps('success'), 200
 

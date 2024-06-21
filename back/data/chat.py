@@ -46,6 +46,17 @@ class Chat(DB):
             'msg_list': msg_list,
             'recv_msg_tmp': recv_msg_tmp
         }
+    
+    def __dict__(self):
+        return Chat._to_db_dict(self)
+    
+    def from_dict(dict):
+        return Chat(
+            cid=dict['chat_id'],
+            title=dict['chat_title'],
+            msg_list=dict['msg_list'],
+            recv_msg_tmp=dict['recv_msg_tmp'],
+        )
 
     def get_chat_id(self):
         return self.get('chat_id')

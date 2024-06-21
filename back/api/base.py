@@ -71,14 +71,16 @@ class Api(metaclass=LockAndSubclassTrackingMeta):
         return result
     
     @staticmethod
-    def _get_responses(chat, provider, model_list, api_key):
+    def _get_responses(chat, provider: str, model_list, api_key):
         if provider not in Api.get_providers():
             raise ValueError(f"Provider '{provider}' is not supported.")
 
-        api = eval(f"{provider}_Api")(api_key)
+        a = getattr(importlib.import_module(f'api.{provider.lower()}'), f'{provider}_Api')
+        print(a)
+        api = a(api_key)
 
         supported_models = api.supported_models
-        if model_list not in supported_models:
+        if any(model not in supported_models for model in model_list):
             raise ValueError(f"Model '{model_list}' is not supported by provider '{provider}'.")
         
         with ThreadPoolExecutor() as executor:
@@ -107,3 +109,6 @@ def import_submodules(package_name):
         importlib.import_module(f"{package_name}.{module_name}")
 
 import_submodules('api')
+import sys
+mo = [m for m in sys.modules.keys()]
+print('api.qwen' in mo)

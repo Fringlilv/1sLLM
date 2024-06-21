@@ -67,7 +67,7 @@ class User(DB):
     
     def get_chat_dict(self):
         chat_dict = self.get('chat_dict')
-        return {k: Chat()._from_db_dict(v) for k, v in chat_dict.items()}
+        return {k: Chat.from_dict(v) for k, v in chat_dict.items()}
 
     def get_chat(self, chat_id):
         return self.get_chat_dict().get(chat_id)
