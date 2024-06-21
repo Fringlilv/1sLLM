@@ -1,4 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
+import importlib
+import pkgutil
 
 class LockAndSubclassTrackingMeta(type):
     def __init__(cls, name, bases, dct):
@@ -96,3 +98,12 @@ class Api(metaclass=LockAndSubclassTrackingMeta):
         获取model_list的回复.
         """
         raise NotImplementedError("Subclasses should implement this method.")
+
+
+# 自动导入子类模块
+def import_submodules(package_name):
+    package = importlib.import_module(package_name)
+    for _, module_name, _ in pkgutil.iter_modules(package.__path__):
+        importlib.import_module(f"{package_name}.{module_name}")
+
+import_submodules('api')

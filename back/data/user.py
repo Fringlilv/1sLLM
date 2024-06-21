@@ -22,6 +22,7 @@ class User(DB):
                 'available_models': available_models
             }
         )
+        
     @staticmethod
     def _to_db_dict(obj) -> dict:
         '''

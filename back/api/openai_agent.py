@@ -1,7 +1,7 @@
 import http.client
 import json
 from openai import OpenAI
-from base import Api
+from .base import Api
 
 class OpenAI_agent_Api(Api):
     def __init__(self, api_key) -> None:

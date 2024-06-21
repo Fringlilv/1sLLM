@@ -1,7 +1,7 @@
 from openai import OpenAI
 import requests
 from bs4 import BeautifulSoup
-from base import Api
+from .base import Api
 
 class Qwen_Api(Api):
     def __init__(self, api_key) -> None:

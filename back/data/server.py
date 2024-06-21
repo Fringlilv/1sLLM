@@ -14,8 +14,6 @@ class Server:
     """
 
     def __init__(self):
-        super().__init__('server')
-        self._db_id = 'server'
         self._user_dict = {}
         self._session_dict = {}
 
@@ -30,17 +28,12 @@ class Server:
         client = MongoClient('mongodb://localhost:27017')
         db = client['1sLLM']
         cursor = db['user'].find({})
-        for user_data in cursor:
-            username = user_data.get('username')
-            password = user_data.get('password')
-            api_dict = user_data.get('api_dict')
-            chat_dict = user_data.get('chat_dict')
-            available_models = user_data.get('available_models')
-            user = User(username=username, password=password, api_dict=api_dict, chat_dict=chat_dict, available_models=available_models)
-            self._user_dict[username] = user
-        # cursor = db['server'].find({})
-        # for server_data in cursor:
-        #     self._session_dict = server_data.get('session_dict')
+        for raw_user_data in cursor:
+            user_data = User._from_db_dict(raw_user_data)
+            user = User(**user_data)
+            self._user_dict[user.get_username()] = user
+        client.close()
+
 
     def add_user(self, user : User):
         """
@@ -108,8 +101,3 @@ class Server:
         删除session_dict.
         """
         self._session_dict.pop(key)
-    
-    # def _db_dict(self):
-    #     return {
-    #         'session_dict': self._session_dict
-    #     }
