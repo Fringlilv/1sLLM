@@ -83,18 +83,23 @@ class ConversationWindow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextButton.icon(
-                    style: ButtonStyle(
-                      foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onBackground),
-                      backgroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.background),
-                      shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50))),
+                  SizedBox(
+                    // alignment: Alignment.centerLeft,
+                    width: double.infinity,
+                    child: TextButton.icon(
+                      style: ButtonStyle(
+                        alignment: Alignment.centerLeft,
+                        foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onBackground),
+                        backgroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.background),
+                        shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50))),
+                      ),
+                      onPressed: () {
+                        onTapNewConversation();
+                        closeDrawer();
+                      },
+                      label: Container(alignment: Alignment.centerRight, child: Text('newConversation'.tr, textAlign: TextAlign.right,),),
+                      icon: const Icon(Icons.add_box),
                     ),
-                    onPressed: () {
-                      onTapNewConversation();
-                      closeDrawer();
-                    },
-                    label: Text('newConversation'.tr),
-                    icon: const Icon(Icons.add_box),
                   ),
                   const SizedBox(
                     height: 6,

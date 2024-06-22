@@ -34,7 +34,7 @@ class OnesLLMTranslations extends Translations {
           "username": "username",
           "password": "password",
           "login": "login",
-          "signup": "signup",
+          "register": "register",
           "selectResponse": "select",
           "emptyChat": "Send message to start new chat",
           "zh": "Chinese",
@@ -43,7 +43,7 @@ class OnesLLMTranslations extends Translations {
           "whiteMode": "white mode",
           "darkMode": "dart mode",
           "toLogin": "have a account? go to login",
-          "toSignup": "no account? go to signup",
+          "toRegister": "no account? go to register",
           "badUserOrPassed": "wrong user or password",
         },
         'zh_CN': {
@@ -77,7 +77,7 @@ class OnesLLMTranslations extends Translations {
           "username": "用户名",
           "password": "密码",
           "login": "登录",
-          "signup": "注册",
+          "register": "注册",
           "selectResponse": "选择该回复",
           "emptyChat": "发送信息以创建新对话",
           "zh": "中文",
@@ -86,7 +86,7 @@ class OnesLLMTranslations extends Translations {
           "whiteMode": "白色模式",
           "darkMode": "暗黑模式",
           "toLogin": "已有账号？去登陆",
-          "toSignup": "没有账号？去注册",
+          "toRegister": "没有账号？去注册",
           "badUserOrPassed": "用户名或密码错误",
         }
       };

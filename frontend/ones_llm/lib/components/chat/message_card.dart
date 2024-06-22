@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:ones_llm/services/api.dart';
-import 'package:ones_llm/components/markdown.dart';
+import 'package:ones_llm/components/chat/markdown.dart';
 import 'package:ones_llm/services/local.dart';
 
 class MessageCard extends StatelessWidget {

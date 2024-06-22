@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:ones_llm/components/common/radius_widgets.dart';
 import 'package:ones_llm/controller/model.dart';
 import 'package:ones_llm/controller/setting.dart';
 import 'package:get/get.dart';
 
 class SettingPage extends GetResponsiveView {
   SettingPage({super.key});
-  final modelController = Get.find<ModelController>();
-  final settingController = Get.find<SettingController>();
+  // final modelController = Get.find<ModelController>();
+  // final controller = Get.find<SettingController>();
   final keyControllers = { for (final element in Get.find<ModelController>().modelProviderMap.keys) element : TextEditingController() };
-
 
   @override
   Widget? builder() {
@@ -16,8 +16,10 @@ class SettingPage extends GetResponsiveView {
       appBar: AppBar(
         title: Text('settings'.tr),
       ),
-      body: Obx(() {
-        settingController.fillApiKeyToControllers(keyControllers);
+      body: GetBuilder<SettingController>(
+        init: SettingController(),
+        builder: (controller) {
+        controller.fillApiKeyToControllers(keyControllers);
         return ListView(
           children: [
             const Divider(),
@@ -28,24 +30,9 @@ class SettingPage extends GetResponsiveView {
             ),
             ...[
               for (final apiKey in keyControllers.entries)
-              TextFormField(
-                style: const TextStyle(fontSize: 16),
-                controller: apiKey.value,
-                decoration: InputDecoration(
-                  labelText: apiKey.key,
-                  labelStyle: Theme.of(Get.context!).textTheme.bodyLarge,
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(50),
-                    // borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: Theme.of(Get.context!).colorScheme.background.withAlpha(150),
-                ),
-            ),
+              RadiusTextFormField(controller: apiKey.value, labelText: apiKey.key,)
             ],
-            ElevatedButton(onPressed: ()=>settingController.setApiKeyFromControllers(keyControllers), child: Text('updataKey'.tr)),
+            ElevatedButton(onPressed: ()=>controller.setApiKeyFromControllers(keyControllers), child: Text('updataKey'.tr)),
             
             const Divider(),
             ListTile(
@@ -56,25 +43,25 @@ class SettingPage extends GetResponsiveView {
             RadioListTile(
               title: Text('followSystem'.tr),
               value: ThemeMode.system,
-              groupValue: settingController.themeMode.value,
+              groupValue: controller.themeMode.value,
               onChanged: (value) {
-                settingController.setThemeMode(ThemeMode.system);
+                controller.setThemeMode(ThemeMode.system);
               },
             ),
             RadioListTile(
               title: Text('darkMode'.tr),
               value: ThemeMode.dark,
-              groupValue: settingController.themeMode.value,
+              groupValue: controller.themeMode.value,
               onChanged: (value) {
-                settingController.setThemeMode(ThemeMode.dark);
+                controller.setThemeMode(ThemeMode.dark);
               },
             ),
             RadioListTile(
               title: Text('whiteMode'.tr),
               value: ThemeMode.light,
-              groupValue: settingController.themeMode.value,
+              groupValue: controller.themeMode.value,
               onChanged: (value) {
-                settingController.setThemeMode(ThemeMode.light);
+                controller.setThemeMode(ThemeMode.light);
               },
             ),
             const Divider(),
@@ -86,20 +73,28 @@ class SettingPage extends GetResponsiveView {
             RadioListTile(
               title: Text('zh'.tr),
               value: 'zh',
-              groupValue: settingController.locale.value.languageCode,
+              groupValue: controller.localeText,
               onChanged: (value) {
-                settingController.setLocale(const Locale('zh'));
+                controller.setLocale(const Locale('zh'));
               },
             ),
             RadioListTile(
               title: Text('en'.tr),
               value: 'en',
-              groupValue: settingController.locale.value.languageCode,
+              groupValue: controller.localeText,
               onChanged: (value) {
-                settingController.setLocale(const Locale('en'));
+                controller.setLocale(const Locale('en'));
               },
             ),
-            const Divider(),
+            ...controller.isLogin?[
+              const Divider(),
+              ElevatedButton(
+                onPressed: controller.logout,
+                style: ButtonStyle(backgroundColor: MaterialStatePropertyAll(Get.context!.theme.colorScheme.error)), 
+                child: Text('logout'.tr),
+              ),
+            ]:[]
+
             // SwitchListTile(
             //     title: Text(
             //       "useStreamApi".tr,

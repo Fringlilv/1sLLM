@@ -6,12 +6,12 @@ import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/services/api.dart';
 import 'package:ones_llm/services/local.dart';
 
-enum LoginStatu { notLogin, tryingLogin, signUp, failLogin, hasLogin }
+enum LoginStatu { login, register }
 
 class LoginController extends GetxController {
   // var failmessage = '';
   // var userName = '';
-  var statu = LoginStatu.notLogin;
+  var statu = LoginStatu.login;
   final userController = TextEditingController();
   final pdController = TextEditingController();
   final pd2Controller = TextEditingController();
@@ -19,7 +19,7 @@ class LoginController extends GetxController {
   final ApiService api = Get.find();
   final LocalService local = Get.find();
 
-  void signUp() async {
+  void register() async {
     final username = userController.text.trim();
     final password = pdController.text.trim();
     EasyLoading.show(status: 'loginingIn'.tr);
@@ -30,12 +30,30 @@ class LoginController extends GetxController {
       EasyLoading.showError('notSame'.tr);
       return;
     }
+
+    final res = await api.register(username, password);
+    switch (res) {
+      case RegisterResponse.success:
+        EasyLoading.dismiss();
+        EasyLoading.showSuccess('registerSuccess'.tr);
+        toLogin();
+        break;
+      case RegisterResponse.existName:
+        // failmessage = 'badUser'.tr;
+        EasyLoading.showError('existName'.tr);
+        break;
+      case RegisterResponse.unknown:
+        // failmessage = 'unknownError'.tr;
+        EasyLoading.showError('unknownError'.tr);
+        break;
+    }
+
   }
 
   void login() async {
     final username = userController.text.trim();
     final password = pdController.text.trim();
-    statu = LoginStatu.tryingLogin;
+    // statu = LoginStatu.tryingLogin;
     EasyLoading.show(status: 'signingUp'.tr);
 
     final res = await api.login(username, password);
@@ -44,31 +62,26 @@ class LoginController extends GetxController {
         EasyLoading.dismiss();
         EasyLoading.showSuccess('loginSuccess'.tr);
 
-        statu = LoginStatu.hasLogin;
+        // statu = LoginStatu.hasLogin;
         local.userName = username;
-        Get.back();
         Get.find<ConversationController>().getConversations();
+        Get.offAllNamed('/');
         break;
       case LoginResponse.badUserOrPassed:
-        statu = LoginStatu.failLogin;
+        // statu = LoginStatu.failLogin;
         // failmessage = 'badUser'.tr;
         EasyLoading.showError('badUserOrPassed'.tr);
         break;
       case LoginResponse.unknown:
-        statu = LoginStatu.failLogin;
+        // statu = LoginStatu.failLogin;
         // failmessage = 'unknownError'.tr;
         EasyLoading.showError('unknownError'.tr);
         break;
     }
   }
 
-  void logout() async {
-    statu = LoginStatu.notLogin;
-    final res = await api.logout();
-  }
-
-  void toSignUp() {
-    statu = LoginStatu.signUp;
+  void toRegister() {
+    statu = LoginStatu.register;
     userController.text = '';
     pdController.text = '';
     pd2Controller.text = '';
@@ -76,7 +89,7 @@ class LoginController extends GetxController {
   }
 
   void toLogin() {
-    statu = LoginStatu.notLogin;
+    statu = LoginStatu.login;
     userController.text = '';
     pdController.text = '';
     pd2Controller.text = '';

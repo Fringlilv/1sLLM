@@ -56,10 +56,12 @@ class Message {
 }
 
 enum LoginResponse { success, badUserOrPassed, unknown }
+enum RegisterResponse { success, existName, unknown}
 
 class ApiService extends GetxService {
   late Dio _dio;
   final baseUrl = 'http://localhost:8000';
+  // final baseUrl = 'http://121.36.38.23:8000';
 
   @override
   void onInit() async {
@@ -146,13 +148,16 @@ class ApiService extends GetxService {
     }
   }
 
-  Future<LoginResponse> register() async {
-    final response = await _get<String>('/user/logout');
+  Future<RegisterResponse> register(username, password) async {
+    final response = await _get<String>('/user/register',
+        queryParameters: {'user': username, 'pd': password});
     switch (response) {
       case 'success':
-        return LoginResponse.success;
+        return RegisterResponse.success;
+      case 'user_name_exist':
+        return RegisterResponse.existName;
       default:
-        return LoginResponse.unknown;
+        return RegisterResponse.unknown;
     }
   }
 
@@ -268,6 +273,14 @@ class ApiService extends GetxService {
               role: value['role']));
           break;
         case 0:
+          messageList.add(Message(
+              conversationId: conversationId,
+              modelName: key,
+              text: value['content'],
+              role: value['role'],
+              error: true));
+          break;
+        case null:
           messageList.add(Message(
               conversationId: conversationId,
               modelName: key,

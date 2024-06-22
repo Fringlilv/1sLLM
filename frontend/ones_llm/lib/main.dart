@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     Get.put(ApiService());
     Get.put(LocalService());
-    Get.put(SettingController());
     Get.put(ModelController());
     Get.put(ConversationController());
     Get.put(MessageController());

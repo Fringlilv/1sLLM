@@ -1,27 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:ones_llm/controller/conversation.dart';
+import 'package:ones_llm/controller/message.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:ones_llm/services/api.dart';
+import 'package:ones_llm/services/local.dart';
 
 class SettingController extends GetxController {
   final themeMode = ThemeMode.system.obs;
-  final locale = const Locale('zh').obs;
+  var localeText = 'zh';
 
   final useStream = true.obs;
   final useWebSearch = false.obs;
 
   final version = "1.0.0".obs;
 
+  var isLogin = false;
+
   final ApiService api = Get.find();
+  final LocalService local = Get.find();
 
   static SettingController get to => Get.find();
 
   @override
   void onInit() async {
     // await getThemeModeFromPreferences();
-    await getLocaleFromPreferences();
+    isLogin = local.isLogin;
     await initAppVersion();
     super.onInit();
   }
@@ -49,42 +56,12 @@ class SettingController extends GetxController {
   //     themeMode = ThemeMode.system;
   //   }
   //   setThemeMode(themeMode);
-  // }
-
-  void switchLocale() {
-    locale.value =
-        _parseLocale(locale.value.languageCode == 'en' ? 'zh' : 'en');
-  }
-
-  Locale _parseLocale(String locale) {
-    switch (locale) {
-      case 'en':
-        return const Locale('en');
-      case 'zh':
-        return const Locale('zh');
-      default:
-        throw Exception('system locale');
-    }
-  }
-
+  // }  
 
   void setLocale(Locale lol) {
-    Get.updateLocale(lol);
-    locale.value = lol;
-    GetStorage _box = GetStorage();
-    _box.write('locale', lol.languageCode);
-  }
-
-  getLocaleFromPreferences() async {
-    Locale locale;
-    GetStorage _box = GetStorage();
-    String localeText = _box.read('locale') ?? 'zh';
-    try {
-      locale = _parseLocale(localeText);
-    } catch (e) {
-      locale = Get.deviceLocale!;
-    }
-    setLocale(locale);
+    local.local=lol;
+    localeText = lol.languageCode;
+    update();
   }
 
   fillApiKeyToControllers(Map<String, TextEditingController> controllerMap) async {
@@ -100,4 +77,28 @@ class SettingController extends GetxController {
     }
   }
 
+  void logout() async {
+    final res = await api.logout();
+    switch (res) {
+      case LoginResponse.success:
+        EasyLoading.dismiss();
+        EasyLoading.showSuccess('logoutSuccess'.tr);
+        local.userName = '';
+        isLogin = false;
+        Get.find<ConversationController>()..conversationList.clear()..currentConversationId.value='';
+        Get.find<MessageController>()..messageList.clear()..selectingMessageList.clear()..selecting.value=false;
+        Get.back();
+        break;
+      case LoginResponse.badUserOrPassed:
+        // statu = LoginStatu.failLogin;
+        // failmessage = 'badUser'.tr;
+        EasyLoading.showError('badUserOrPassed'.tr);
+        break;
+      case LoginResponse.unknown:
+        // statu = LoginStatu.failLogin;
+        // failmessage = 'unknownError'.tr;
+        EasyLoading.showError('unknownError'.tr);
+        break;
+    }
+  }
 }

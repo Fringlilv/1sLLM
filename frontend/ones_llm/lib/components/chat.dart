@@ -7,7 +7,7 @@ import 'package:ones_llm/components/chat/model_panel.dart';
 import 'package:ones_llm/components/chat/select_card.dart';
 
 import 'package:ones_llm/controller/model.dart';
-import 'package:ones_llm/components/markdown.dart';
+import 'package:ones_llm/components/chat/markdown.dart';
 import 'package:ones_llm/components/chat/message_card.dart';
 import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/controller/message.dart';
