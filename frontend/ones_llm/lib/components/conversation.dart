@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ones_llm/components/common/buttons.dart';
 
 import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/controller/message.dart';
@@ -83,39 +84,24 @@ class ConversationWindow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    // alignment: Alignment.centerLeft,
-                    width: double.infinity,
-                    child: TextButton.icon(
-                      style: ButtonStyle(
-                        alignment: Alignment.centerLeft,
-                        foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onBackground),
-                        backgroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.background),
-                        shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50))),
-                      ),
-                      onPressed: () {
+                  IconTextButton(
+                    label: 'newConversation'.tr,
+                    icon: const Icon(Icons.add_box),
+                    onPressed: () {
                         onTapNewConversation();
                         closeDrawer();
                       },
-                      label: Container(alignment: Alignment.centerRight, child: Text('newConversation'.tr, textAlign: TextAlign.right,),),
-                      icon: const Icon(Icons.add_box),
-                    ),
                   ),
                   const SizedBox(
                     height: 6,
                   ),
-                  TextButton.icon(
-                    style: ButtonStyle(
-                      foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onBackground),
-                      backgroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.background),
-                      shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50))),
-                    ),
+                  IconTextButton(
+                    label: 'refresh'.tr,
+                    icon: const Icon(Icons.refresh_rounded),
                     onPressed: () {
                       controller.getConversations();
                       closeDrawer();
                     },
-                    label: Text('refresh'.tr),
-                    icon: const Icon(Icons.refresh_rounded),
                   ),
                   const SizedBox(
                     height: 6,
@@ -127,18 +113,13 @@ class ConversationWindow extends StatelessWidget {
                   //     icon: const Icon(Icons.info),
                   //   );
                   // }),
-                  TextButton.icon(
-                    style: ButtonStyle(
-                      foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onBackground),
-                      backgroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.background),
-                      shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50))),
-                    ),
+                  IconTextButton(
+                    label: 'settings'.tr,
+                    icon: const Icon(Icons.settings),
                     onPressed: () {
                       closeDrawer();
                       Get.toNamed('/setting');
                     },
-                    label: Text('settings'.tr),
-                    icon: const Icon(Icons.settings),
                   ),
                 ],
               ),

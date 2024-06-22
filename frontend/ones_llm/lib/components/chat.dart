@@ -147,7 +147,7 @@ class ChatWindow extends StatelessWidget {
                                   BorderRadius.all(Radius.circular(30))),
                           padding: EdgeInsets.zero,
                         ),
-                        child: const Icon(Icons.send),
+                        child: const Icon(Icons.library_books_outlined),
                       ),
                     ),
                   ),

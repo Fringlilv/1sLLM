@@ -1,3 +1,4 @@
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 import 'package:ones_llm/services/api.dart';
@@ -30,6 +31,10 @@ class MessageController extends GetxController {
     String text,
     Map<String, List<String>> selectProviderModels
   ) async {
+    if (selectProviderModels.isEmpty){
+      EasyLoading.showError('notSelectModel'.tr);
+      return;
+    }
     selecting.value = true;
     final messages = await api.getMessages(conversationId);
     final sendedMessage = Message(conversationId: conversationId, text: text, role: Get.find<LocalService>().userName);

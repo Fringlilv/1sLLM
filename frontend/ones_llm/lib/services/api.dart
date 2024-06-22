@@ -60,8 +60,8 @@ enum RegisterResponse { success, existName, unknown}
 
 class ApiService extends GetxService {
   late Dio _dio;
-  final baseUrl = 'http://localhost:8000';
-  // final baseUrl = 'http://121.36.38.23:8000';
+  // final baseUrl = 'http://localhost:8000';
+  final baseUrl = 'http://121.36.38.23:8000';
 
   @override
   void onInit() async {
@@ -236,16 +236,16 @@ class ApiService extends GetxService {
     response['msg_list'].forEach((element) {
       messageList.add(Message(
           conversationId: conversationId,
-          text: element['content'],
-          role: element['role']));
+          text: element['msg'],
+          role: element['name']));
     });
     List<Message> tempMessageList = [];
     if (response['recv_msg_tmp'] is Map) {
       response['recv_msg_tmp'].forEach((k, v) {
         tempMessageList.add(Message(
             conversationId: conversationId,
-            text: v['content'],
-            role: v['role']));
+            text: v['msg'],
+            role: v['name']));
       });
     }
     return {"msgList": messageList, "tmpList": tempMessageList};
@@ -269,23 +269,23 @@ class ApiService extends GetxService {
           messageList.add(Message(
               conversationId: conversationId,
               modelName: key,
-              text: value['content'],
-              role: value['role']));
+              text: value['msg'],
+              role: value['name']));
           break;
         case 0:
           messageList.add(Message(
               conversationId: conversationId,
               modelName: key,
-              text: value['content'],
-              role: value['role'],
+              text: value['msg'],
+              role: value['name'],
               error: true));
           break;
         case null:
           messageList.add(Message(
               conversationId: conversationId,
               modelName: key,
-              text: value['content'],
-              role: value['role'],
+              text: value['msg'],
+              role: value['name'],
               error: true));
           break;
       }
