@@ -241,30 +241,8 @@ class WebSever:
         for response in responses:
             recv_msg = data.Message('assistant', response['model'], response['message'], response['code'])
             chat.add_recv_msg(response['model'], recv_msg)
-        print(chat.get_recv_msg_tmp())
+        user.add_chat(chat)
         return json.dumps(chat.get_recv_msg_tmp(), default=lambda o: o.__dict__()), 200
-
-    # def chat_regen(self):
-    #     """
-    #     重新生成聊天内容.
-    #     """
-    #     user = self.server.get_user(session.get('username'), session.get('session_id'))
-    #     if user is None:
-    #         return json.dumps('invalid_user'), 403
-    #     chat = self.server.get_chat(user, base64.b64decode(
-    #         request.args.get('cid')).decode('utf-8'))
-    #     if chat is None:
-    #         return json.dumps('invalid_chat_id'), 403
-    #     models = json.loads(base64.b64decode(
-    #         request.args.get('ml')).decode('utf-8'))
-    #     for model_name in models:
-    #         api = user.get_api(model_name)
-    #         recv_msg = data.Message(
-    #             'assistant', model_name, 'echo: unknown_model')
-    #         if api is not None:
-    #             recv_msg.msg = api.get_response(chat)
-    #         chat.add_recv_msg(model_name, recv_msg)
-    #     return json.dumps(chat._recv_msg_tmp, default=lambda o: o._to_db_dict(o)), 200
 
     def chat_sel(self):
         """
@@ -283,11 +261,7 @@ class WebSever:
         chat.sel_recv_msg(model_name)
         return json.dumps('success'), 200
 
-
 if __name__ == '__main__':
-    # admin配置
-    # admin = data.User('admin', hashlib.md5('123456'.encode('utf-8')).hexdigest())
     # 启动服务器
     ws = WebSever()
-    # ws.server.add_user(admin)
     ws.run(debug=True)

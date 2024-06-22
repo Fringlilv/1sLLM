@@ -4,13 +4,14 @@ import pymongo
 class DB:
     db = pymongo.MongoClient('mongodb://localhost:27017')['1sLLM']
     
-    def __init__(self, set_name=None, db_id=None, db_dict=None) -> None:
+    def __init__(self, set_name=None, db_id=None, db_dict=None, tmp=False) -> None:
         if set_name is None:
             raise ValueError("set_name must be provided.")
         self.db_set = DB.db[set_name]
         self._db_id = db_id
-        for key, value in db_dict.items():
-            self.update(key, value)
+        if not tmp:
+            for key, value in db_dict.items():
+                self.update(key, value)
 
     @staticmethod
     def _to_db_dict() -> dict:
@@ -31,8 +32,6 @@ class DB:
         直接同步至数据库，不更新self.
         '''
         self.db_set.update_one({'_id': self._db_id}, {'$set': {key: value}}, upsert=True)        
-        # db_dict = self.db_set.find_one({'_id': self._db_id})
-        # print(db_dict)
 
     def delete(self) -> None:
         '''

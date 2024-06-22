@@ -9,7 +9,7 @@ class Chat(DB):
         recv_msg_tmp: 模型名-Msg, 最后一次回答的接收消息
     """
 
-    def __init__(self, cid=None, title=None, msg_list=[], recv_msg_tmp={}):
+    def __init__(self, cid=None, title=None, msg_list=[], recv_msg_tmp={}, tmp=False):
         super().__init__(
             set_name='chat',
             db_id=cid,
@@ -18,7 +18,8 @@ class Chat(DB):
                 'chat_title': title,
                 'msg_list': msg_list,
                 'recv_msg_tmp': recv_msg_tmp
-            }
+            },
+            tmp=tmp
         )
 
     @staticmethod
@@ -37,8 +38,8 @@ class Chat(DB):
     def _from_db_dict(db_dict: dict) -> None:
         chat_id = db_dict['chat_id']
         chat_title = db_dict['chat_title']
-        msg_list = [Message()._from_db_dict(msg) for msg in db_dict['msg_list']]
-        recv_msg_tmp = {model_name: Message()._from_db_dict(msg) for model_name, msg in db_dict['recv_msg_tmp'].items()}
+        msg_list = [Message._from_db_dict(msg) for msg in db_dict['msg_list']]
+        recv_msg_tmp = {model_name: Message._from_db_dict(msg) for model_name, msg in db_dict['recv_msg_tmp'].items()}
         
         return {
             'chat_id': chat_id,
@@ -50,12 +51,18 @@ class Chat(DB):
     def __dict__(self):
         return Chat._to_db_dict(self)
     
-    def from_dict(dict):
+    @staticmethod
+    def rebuilt_from_dict(dict, tmp):
+        '''
+        重构对象.
+        tmp: 是否为临时对象.
+        '''
         return Chat(
             cid=dict['chat_id'],
             title=dict['chat_title'],
             msg_list=dict['msg_list'],
             recv_msg_tmp=dict['recv_msg_tmp'],
+            tmp=tmp
         )
 
     def get_chat_id(self):

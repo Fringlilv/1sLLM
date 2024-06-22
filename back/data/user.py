@@ -33,7 +33,7 @@ class User(DB):
             'username': obj.get_username(),
             'password': obj.get_password(),
             'api_dict': obj.get_api_dict(),
-            'chat_dict': {k: Chat()._to_db_dict(v) for k, v in obj.get_chat_dict().items()},
+            'chat_dict': {k: Chat._to_db_dict(v) for k, v in obj.get_chat_dict().items()},
             'available_models': obj.get_available_models()
         }
         
@@ -42,7 +42,7 @@ class User(DB):
         username = db_dict['username']
         password = db_dict['password']
         api_dict = db_dict['api_dict']
-        chat_dict = {k: Chat()._from_db_dict(v) for k, v in db_dict['chat_dict'].items()}
+        chat_dict = {k: Chat._from_db_dict(v) for k, v in db_dict['chat_dict'].items()}
         available_models = db_dict['available_models']
         
         return {
@@ -67,21 +67,22 @@ class User(DB):
     
     def get_chat_dict(self):
         chat_dict = self.get('chat_dict')
-        return {k: Chat.from_dict(v) for k, v in chat_dict.items()}
+        return {k: Chat.rebuilt_from_dict(v, tmp=True) for k, v in chat_dict.items()}
 
     def get_chat(self, chat_id):
         return self.get_chat_dict().get(chat_id)
 
     def add_chat(self, chat):
+        cid = chat.get_chat_id()
         current_chat_dict = self.get_chat_dict()
-        current_chat_dict[chat.get_chat_id()] = chat
-        current_chat_dict = {chat_id: Chat()._to_db_dict(chat) for chat_id, chat in current_chat_dict.items()}
+        current_chat_dict[cid] = chat
+        current_chat_dict = {chat_id: Chat._to_db_dict(chat) for chat_id, chat in current_chat_dict.items()}
         self.update('chat_dict', current_chat_dict)
 
     def del_chat(self, chat_id):
         current_chat_dict = self.get_chat_dict()
         del current_chat_dict[chat_id]
-        current_chat_dict = {chat_id: Chat()._to_db_dict(chat) for chat_id, chat in current_chat_dict.items()}
+        current_chat_dict = {chat_id: Chat._to_db_dict(chat) for chat_id, chat in current_chat_dict.items()}
         self.update('chat_dict', current_chat_dict)
 
     def add_api(self, service_provider_name, api_key) -> bool:
