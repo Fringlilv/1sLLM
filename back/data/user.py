@@ -11,7 +11,7 @@ class User(DB):
         available_models: 服务商名-支持的模型列表
     """
 
-    def __init__(self, username=None, password=None, api_dict={}, chat_dict={}, available_models={}):
+    def __init__(self, username=None, password=None, api_dict={}, chat_dict={}, available_models={}, tmp=False):
         super().__init__(
             set_name='user', 
             db_id=username,
@@ -21,7 +21,8 @@ class User(DB):
                 'api_dict': api_dict,
                 'chat_dict': chat_dict,
                 'available_models': available_models
-            }
+            },
+            tmp=tmp
         )
         
     @staticmethod

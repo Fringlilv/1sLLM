@@ -10,7 +10,7 @@ class Message:
         self.code = code
 
     def __dict__(self):
-        return {'role': self.name, 'content': self.msg}
+        return Message._to_db_dict(self)
     
     def to_role_dict(self):
         return {'role': self.role, 'content': self.msg}

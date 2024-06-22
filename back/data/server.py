@@ -30,7 +30,7 @@ class Server:
         cursor = db['user'].find({})
         for raw_user_data in cursor:
             user_data = User._from_db_dict(raw_user_data)
-            user = User(**user_data)
+            user = User(**user_data, tmp=True)
             self._user_dict[user.get_username()] = user
         client.close()
 
