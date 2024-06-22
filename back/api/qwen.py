@@ -1,3 +1,4 @@
+import json
 from openai import OpenAI
 import requests
 from bs4 import BeautifulSoup
@@ -36,9 +37,9 @@ class Qwen_Api(Api):
     def _get_response(self, chat, model_id):
         try:
             msg_list = [msg.to_role_dict() for msg in chat.get_msg_list()]
-            completion = self.client.completions.create(
+            completion = self.client.chat.completions.create(
                 model=model_id,
-                prompt=msg_list,
+                messages=msg_list,
             )
             data = {'model': model_id, 'code': 1, 'message': completion.choices[0].message.content}
         except Exception as e:

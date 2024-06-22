@@ -35,28 +35,5 @@ class OpenAI_agent_Api(Api):
             data = {'model': model_id, 'code': 1, 'message': completion.choices[0].message.content}
         except Exception as e:
             print(e)
-            data = {'model': model_id, 'code': 0, 'message': e}
+            data = {'model': model_id, 'code': 0, 'message': str(e)}
         return data
-
-if __name__ == "__main__":
-    OpenAI_agent = OpenAI_agent_Api(api_key='sk-yvEwm4Ho60mnUvzUQSByjc8aCWWUFS4glzEsq02M8EKfJ5Rh')
-    print(OpenAI_agent.supported_models)
-
-    chat = [
-        {
-            "role": "system",
-            "content": "You are a helpful assistant."
-        },
-        {
-            "role": "user",
-            "content": "写一篇500字作文，主题是“我的家乡”。"
-        }
-    ]
-    # 计时
-    import time
-    start = time.time()
-    responses = OpenAI_agent.get_responses(chat, ['gpt-3.5-turbo', 'gpt-3.5-turbo-0125'])
-    end = time.time()
-
-    print(responses)
-    print(end - start)

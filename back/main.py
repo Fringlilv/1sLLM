@@ -286,8 +286,8 @@ class WebSever:
 
 if __name__ == '__main__':
     # admin配置
-    admin = data.User('admin', hashlib.md5('123456'.encode('utf-8')).hexdigest())
+    # admin = data.User('admin', hashlib.md5('123456'.encode('utf-8')).hexdigest())
     # 启动服务器
     ws = WebSever()
-    ws.server.add_user(admin)
+    # ws.server.add_user(admin)
     ws.run(debug=True)
