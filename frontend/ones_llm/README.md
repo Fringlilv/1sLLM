@@ -7,22 +7,39 @@
 运行前保证已正确[安装](https://docs.flutter.cn/get-started/install)flutter。目前已测试：
 
 - 本地调试环境下web端及windows端
-- 构建发布下wen端
+- 构建发布下web端及windows端
 
 不保证其他平台下的表现。
 
 ### 本地调试
-使用以下命令进行本地调试
+
+如果你使用的是 vscode，可以在右下角选择调试设备，并通过点击 `main.dart` 中 `main` 函数上的 run 来运行。
+
+或在终端中使用以下命令进行本地调试
 ``` cmd
 flutter run
 ```
+并在终端中选择调试的设备。
 ### 构建发布
-使用以下命令构建web端
+- web端
+
+使用以下命令构建
 ```cmd
-flutter build build web --source-maps --web-renderer html
+flutter build web --source-maps --web-renderer html
 ```
+
 打包后的代码位于`./build/web`，运行前请注意调整`./build/web/index.html`中的`<base href="/">`
+
 > 注：如果不指定 web-renderer 为 html 可能导致 edge 无法正常打开，原因未知。
+
+- windows端
+
+使用以下命令构建
+```cmd
+flutter build windows
+```
+
+构建后的文件位于`./build/windows/x64/runner/Release/`，该目录中所有文件都是应用文件，请勿删除或移动，双击`ones_llm.exe`启动。
 
 ## 项目结构
 
@@ -71,3 +88,6 @@ components -> controller -> services
 ```
 页面级组件状态存储于controller，并调用controller提供的接口函数；controller内处理业务逻辑；controller通过services来调用api获取后端数据，或调用local读取本地数据。
 
+### 已知问题
+
+- 在web端下，刷新网页会导致bug
