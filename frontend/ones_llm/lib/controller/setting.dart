@@ -43,6 +43,7 @@ class SettingController extends GetxController {
     themeMode.value = model;
     GetStorage _box = GetStorage();
     _box.write('theme', model.toString().split('.')[1]);
+    update();
   }
 
   // getThemeModeFromPreferences() async {
@@ -56,22 +57,24 @@ class SettingController extends GetxController {
   //     themeMode = ThemeMode.system;
   //   }
   //   setThemeMode(themeMode);
-  // }  
+  // }
 
   void setLocale(Locale lol) {
-    local.local=lol;
+    local.local = lol;
     localeText = lol.languageCode;
     update();
   }
 
-  fillApiKeyToControllers(Map<String, TextEditingController> controllerMap) async {
+  fillApiKeyToControllers(
+      Map<String, TextEditingController> controllerMap) async {
     final keys = await api.getAllApiKey();
     for (final ctrl in controllerMap.entries) {
       ctrl.value.text = keys[ctrl.key] ?? '';
     }
   }
 
-  setApiKeyFromControllers(Map<String, TextEditingController> controllerMap) async {
+  setApiKeyFromControllers(
+      Map<String, TextEditingController> controllerMap) async {
     for (final ctrl in controllerMap.entries) {
       api.setApiKey(ctrl.key, ctrl.value.text);
     }
@@ -85,8 +88,13 @@ class SettingController extends GetxController {
         EasyLoading.showSuccess('logoutSuccess'.tr);
         local.userName = '';
         isLogin = false;
-        Get.find<ConversationController>()..conversationList.clear()..currentConversationId.value='';
-        Get.find<MessageController>()..messageList.clear()..selectingMessageList.clear()..selecting.value=false;
+        Get.find<ConversationController>()
+          ..conversationList.clear()
+          ..currentConversationId.value = '';
+        Get.find<MessageController>()
+          ..messageList.clear()
+          ..selectingMessageList.clear()
+          ..selecting.value = false;
         Get.back();
         break;
       case LoginResponse.badUserOrPassed:

@@ -18,8 +18,6 @@ class ModelProvider {
 
 class ModelController extends GetxController {
   final modelProviderMap = <String, ModelProvider>{}.obs;
-  // final availabelModelList = <String>['gpt-3.5-turbo', 'gpt-3.5-turbo-ca', 'gpt-4-turbo'].obs;
-  // final selectedModelList = <String>['gpt-3.5-turbo', 'gpt-3.5-turbo-ca'].obs;
 
   final ApiService api = Get.find();
 
@@ -71,13 +69,13 @@ class ModelController extends GetxController {
   }
 
   Map<String, List<String>> selected() {
-    final l = { for (var element in modelProviderMap.keys) element : <String>[] };
+    final l = {for (var element in modelProviderMap.keys) element: <String>[]};
     for (final element in modelProviderMap.values) {
       for (final model in element.modelMap.values) {
-        if(model.selected) l[element.name]?.add(model.name);
+        if (model.selected) l[element.name]?.add(model.name);
       }
     }
-    l.removeWhere((k, v)=>v.isEmpty);
+    l.removeWhere((k, v) => v.isEmpty);
     return l;
   }
 }

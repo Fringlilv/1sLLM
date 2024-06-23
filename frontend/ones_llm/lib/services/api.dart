@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/browser.dart'
     if (dart.library.io) 'package:ones_llm/crossPlatform/fakeDioBrowser.dart';
@@ -56,7 +55,8 @@ class Message {
 }
 
 enum LoginResponse { success, badUserOrPassed, unknown }
-enum RegisterResponse { success, existName, unknown}
+
+enum RegisterResponse { success, existName, unknown }
 
 class ApiService extends GetxService {
   late Dio _dio;
@@ -89,8 +89,10 @@ class ApiService extends GetxService {
     try {
       final response = await _dio.get<String>(
         path,
-        queryParameters: queryParameters?.map(
-            (key, value) => MapEntry(key, base64Encode(utf8.encode(value is String?value:jsonEncode(value))))),
+        queryParameters: queryParameters?.map((key, value) => MapEntry(
+            key,
+            base64Encode(
+                utf8.encode(value is String ? value : jsonEncode(value))))),
         options: options,
         cancelToken: cancelToken,
         onReceiveProgress: onReceiveProgress,
@@ -189,7 +191,9 @@ class ApiService extends GetxService {
     );
     final Map<String, List<String>> res = {};
     for (var element in response.entries) {
-      res[element.key] = (element.value as List<dynamic>).map((item) => item as String).toList();
+      res[element.key] = (element.value as List<dynamic>)
+          .map((item) => item as String)
+          .toList();
     }
     return res;
   }
@@ -243,9 +247,7 @@ class ApiService extends GetxService {
     if (response['recv_msg_tmp'] is Map) {
       response['recv_msg_tmp'].forEach((k, v) {
         tempMessageList.add(Message(
-            conversationId: conversationId,
-            text: v['msg'],
-            role: v['name']));
+            conversationId: conversationId, text: v['msg'], role: v['name']));
       });
     }
     return {"msgList": messageList, "tmpList": tempMessageList};

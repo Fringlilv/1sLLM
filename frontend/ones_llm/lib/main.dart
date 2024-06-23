@@ -4,12 +4,12 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
+import 'package:ones_llm/configs/init.dart';
 import 'package:ones_llm/configs/route.dart';
 import 'package:ones_llm/configs/translations.dart';
 import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/controller/message.dart';
 import 'package:ones_llm/controller/model.dart';
-import 'package:ones_llm/controller/setting.dart';
 import 'package:ones_llm/pages/home.dart';
 import 'package:ones_llm/services/api.dart';
 import 'package:ones_llm/services/local.dart';
@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    initAll();
     Get.put(ApiService());
     Get.put(LocalService());
     Get.put(ModelController());

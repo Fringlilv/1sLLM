@@ -29,7 +29,8 @@ class ModelSelectWindow extends StatelessWidget {
                 child: Wrap(
                   spacing: 8.0,
                   runSpacing: 5.0,
-                  children: provider.modelMap.values.map((model) {
+                  children: provider.modelMap.values.isNotEmpty?
+                  provider.modelMap.values.map((model) {
                     return ElevatedButton(
                       onPressed: () => controller.toggleSelectModel(
                           provider.name, model.name),
@@ -49,10 +50,10 @@ class ModelSelectWindow extends StatelessWidget {
                               EdgeInsets.symmetric(
                                   vertical: 12, horizontal: 8))),
                       child: Text(model.name,
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                           textAlign: TextAlign.center),
                     );
-                  }).toList(),
+                  }).toList():[Container(alignment: Alignment.center, child: const Text('noAvilableModels'),)],
                 ),
               ),
               theme: const ExpandableThemeData(

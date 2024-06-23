@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:get/get.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:ones_llm/services/api.dart';
 import 'package:ones_llm/components/chat/markdown.dart';

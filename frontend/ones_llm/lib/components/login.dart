@@ -12,7 +12,7 @@ class _LoginWindow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<LoginController>(
-      init: LoginController(),
+        init: LoginController(),
         builder: (controller) => Container(
               padding: const EdgeInsets.all(50),
               decoration: BoxDecoration(
@@ -25,7 +25,8 @@ class _LoginWindow extends StatelessWidget {
               ),
               constraints: BoxConstraints(
                   maxWidth: 500,
-                  maxHeight: controller.statu == LoginStatu.register ? 500 : 400),
+                  maxHeight:
+                      controller.statu == LoginStatu.register ? 500 : 400),
               child: Column(
                 children: [
                   Expanded(
@@ -43,18 +44,18 @@ class _LoginWindow extends StatelessWidget {
                       labelText: "password".tr,
                     ),
                   ),
-                  controller.statu == LoginStatu.register
-                      ? const Expanded(flex: 1, child: SizedBox())
-                      : const SizedBox(),
-                  controller.statu == LoginStatu.register
-                      ? Expanded(
-                          flex: 2,
-                          child: RadiusTextFormField(
-                            controller: controller.pd2Controller,
-                            labelText: "password2".tr,
-                          ),
-                        )
-                      : const SizedBox(),
+                  ...controller.statu == LoginStatu.register
+                      ? [
+                          const Expanded(flex: 1, child: SizedBox()),
+                          Expanded(
+                            flex: 2,
+                            child: RadiusTextFormField(
+                              controller: controller.pd2Controller,
+                              labelText: "password2".tr,
+                            ),
+                          )
+                        ]
+                      : [],
                   const Expanded(flex: 1, child: SizedBox()),
                   Expanded(
                     flex: 1,
@@ -111,7 +112,7 @@ class LoginWindow extends StatelessWidget {
     return Container(
         alignment: Alignment.center,
         color: Theme.of(context).colorScheme.primaryContainer.withAlpha(50),
-        child: _LoginWindow());
+        child: const _LoginWindow());
   }
 }
 
@@ -123,7 +124,7 @@ class LoginDialog extends StatelessWidget {
     return Dialog(
       backgroundColor: Theme.of(context).colorScheme.background,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-      child: _LoginWindow(),
+      child: const _LoginWindow(),
     );
   }
 }

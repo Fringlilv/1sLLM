@@ -2,17 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:ones_llm/components/chat/model_panel.dart';
 import 'package:ones_llm/components/chat/select_card.dart';
 
 import 'package:ones_llm/controller/model.dart';
-import 'package:ones_llm/components/chat/markdown.dart';
 import 'package:ones_llm/components/chat/message_card.dart';
 import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/controller/message.dart';
-// import 'package:flutter_chatgpt/controller/settings.dart';
-import 'package:ones_llm/services/api.dart';
 
 class ChatWindow extends StatelessWidget {
   final _textController = TextEditingController();
@@ -27,10 +23,6 @@ class ChatWindow extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       color: Theme.of(context).colorScheme.secondaryContainer.withAlpha(20),
       child: Row(children: [
-        // const Expanded(
-        //   flex: 1,
-        //   child: SizedBox(),
-        // ),
         Expanded(
           flex: 9,
           child: Column(
@@ -78,6 +70,28 @@ class ChatWindow extends StatelessWidget {
               const SizedBox(height: 16),
               Row(
                 children: [
+                  Container(
+                    height: 48,
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    child: Obx(
+                      () => ElevatedButton(
+                        onPressed:
+                            Get.find<MessageController>().selecting.isTrue
+                                ? null
+                                : () {
+                                  Get.find<ModelController>().getAvailableProviderModels();
+                                  Get.dialog(
+                                    const Dialog(child: ModelSelectWindow()));},
+                        style: ElevatedButton.styleFrom(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30))),
+                          padding: EdgeInsets.zero,
+                        ),
+                        child: const Icon(FontAwesomeIcons.bars),
+                      ),
+                    ),
+                  ),
                   Expanded(
                     child: Obx(
                       () => TextFormField(
@@ -109,9 +123,9 @@ class ChatWindow extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  SizedBox(
+                  Container(
                     height: 48,
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
                     child: Obx(
                       () => ElevatedButton(
                         onPressed:
@@ -127,27 +141,6 @@ class ChatWindow extends StatelessWidget {
                           padding: EdgeInsets.zero,
                         ),
                         child: const Icon(Icons.send),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 48,
-                    child: Obx(
-                      () => ElevatedButton(
-                        onPressed:
-                            Get.find<MessageController>().selecting.isTrue
-                                ? null
-                                : () {
-                                  Get.find<ModelController>().getAvailableProviderModels();
-                                  Get.dialog(
-                                    const Dialog(child: ModelSelectWindow()));},
-                        style: ElevatedButton.styleFrom(
-                          shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(30))),
-                          padding: EdgeInsets.zero,
-                        ),
-                        child: const Icon(Icons.library_books_outlined),
                       ),
                     ),
                   ),
