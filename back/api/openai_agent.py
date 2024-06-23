@@ -2,6 +2,8 @@ import http.client
 import json
 from openai import OpenAI
 from .base import Api
+import ssl
+import certifi
 
 class OpenAI_agent_Api(Api):
     def __init__(self, api_key) -> None:
@@ -12,7 +14,10 @@ class OpenAI_agent_Api(Api):
         )
     
     def _list_models(self):
-        conn = http.client.HTTPSConnection("api.chatanywhere.tech")
+        conn = http.client.HTTPSConnection(
+            "api.chatanywhere.tech",
+            context=ssl.create_default_context(cafile=certifi.where())
+        )
         payload = ''
         headers = {
             'Authorization': 'Bearer ' + self.api_key,
@@ -27,7 +32,7 @@ class OpenAI_agent_Api(Api):
     
     def _get_response(self, chat, model_id):
         try:
-            msg_list = [msg.to_role_dict() for msg in chat.msg_list]
+            msg_list = [msg.to_role_dict() for msg in chat.get_msg_list()]
             completion = self.client.chat.completions.create(
                 model=model_id,
                 messages=msg_list
