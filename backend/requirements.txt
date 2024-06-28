@@ -1,0 +1,8 @@
+beautifulsoup4==4.12.3
+certifi==2023.7.22
+Flask==3.0.3
+Flask_Cors==4.0.1
+openai==1.35.7
+pymongo==4.7.3
+pytest==8.2.2
+Requests==2.32.3
