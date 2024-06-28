@@ -5,8 +5,7 @@ class CodeWrapperWidget extends StatefulWidget {
   final Widget child;
   final String text;
 
-  const CodeWrapperWidget({Key? key, required this.child, required this.text})
-      : super(key: key);
+  const CodeWrapperWidget({super.key, required this.child, required this.text});
 
   @override
   State<CodeWrapperWidget> createState() => _PreWrapperState();

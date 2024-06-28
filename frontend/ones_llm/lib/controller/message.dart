@@ -1,23 +1,16 @@
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
-import 'package:ones_llm/controller/user.dart';
 
 import 'package:ones_llm/services/api.dart';
+import 'package:ones_llm/services/local.dart';
 
 
-class MessageController extends GetxController {
-  final modelList = <String>['gpt-3.5-turbo', 'gpt-3.5-turbo-ca', 'gpt-4-turbo'].obs;
-  final selectedModelList = <String>['gpt-3.5-turbo', 'gpt-3.5-turbo-ca', 'gpt-4-turbo'].obs;
-  
+class MessageController extends GetxController { 
   final messageList = <Message>[].obs;
   final selectingMessageList = <Message>[].obs;
   final selecting = false.obs;
 
   final ApiService api = Get.find();
-  
-
-  void initModelList() async {
-    modelList.value = await api.getModelList();
-  }
 
   void loadAllMessages(String conversationId) async {
     if (conversationId == '')return;
@@ -33,31 +26,33 @@ class MessageController extends GetxController {
     selecting.value = false;
   }
 
-  void sendMessage(
+  Future<bool> sendMessage(
     String conversationId,
-    String text
+    String text,
+    Map<String, List<String>> selectProviderModels
   ) async {
+    if (selectProviderModels.isEmpty){
+      EasyLoading.showError('notSelectModel'.tr);
+      return false;
+    }
     selecting.value = true;
     final messages = await api.getMessages(conversationId);
-    final sendedMessage = Message(conversationId: conversationId, text: text, role: Get.find<UserController>().userName.value);
+    final sendedMessage = Message(conversationId: conversationId, text: text, role: Get.find<LocalService>().userName);
     messageList.value = [...messages['msgList']!, sendedMessage];
 
-    final newMessages = await api.sendMessage(conversationId, text, selectedModelList);
+    EasyLoading.show(status: 'generatingResponse'.tr, dismissOnTap: true);
+    final newMessages = await api.sendMessage(conversationId, text, selectProviderModels);
+    EasyLoading.dismiss();
     selectingMessageList.value = newMessages;
-    // await api.selectMessages(conversationId, 'gpt-3.5-turbo-ca');
-    
-    // messageList.value = [...messages, sendedMessage, newMessages[0]];
+    return true;
   }
 
   void selectMessage(
-    String conversationId,
-    String modelName,
+    Message message
   ) async {
-    await api.selectMessages(conversationId, modelName);
+    await api.selectMessages(message.conversationId, message.role);
     selectingMessageList.value = [];
-    // final newMessages = []
-    // messageList.value = [...messages, sendedMessage, newMessages[0]];
-    loadAllMessages(conversationId);
+    loadAllMessages(message.conversationId);
   }
 
 }

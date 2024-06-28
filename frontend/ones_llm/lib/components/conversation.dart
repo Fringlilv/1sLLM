@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ones_llm/components/common/buttons.dart';
 
 import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/controller/message.dart';
@@ -16,7 +17,7 @@ class ConversationWindow extends StatelessWidget {
       decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.primaryContainer.withAlpha(150),
           border: const Border(right: BorderSide(width: .1))),
-      constraints: const BoxConstraints(maxWidth: 300),
+      constraints: const BoxConstraints(maxWidth: 250),
       child: GetX<ConversationController>(builder: (controller) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,8 +41,10 @@ class ConversationWindow extends StatelessWidget {
                         return Card(
                           elevation: 1,
                           color: Theme.of(context).colorScheme.background.withAlpha(235),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                           child: Obx(() => ListTile(
                             tileColor: Theme.of(context).colorScheme.primaryContainer.withAlpha(70),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                             // selectedColor: Theme.of(context).colorScheme.primaryContainer.withAlpha(20),
                             onTap: () {
                               _tapConversation(index);
@@ -62,7 +65,6 @@ class ConversationWindow extends StatelessWidget {
                             trailing: Builder(builder: (context) {
                               return IconButton(
                                   onPressed: () {
-                                    //显示一个overlay操作
                                     _showConversationDetail(context, index);
                                   },
                                   icon: Icon(
@@ -82,14 +84,24 @@ class ConversationWindow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextButton.icon(
-                    style: ButtonStyle(foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onPrimaryContainer)),
+                  IconTextButton(
+                    label: 'newConversation'.tr,
+                    icon: const Icon(Icons.add_box),
                     onPressed: () {
-                      onTapNewConversation();
+                        onTapNewConversation();
+                        closeDrawer();
+                      },
+                  ),
+                  const SizedBox(
+                    height: 6,
+                  ),
+                  IconTextButton(
+                    label: 'refresh'.tr,
+                    icon: const Icon(Icons.refresh_rounded),
+                    onPressed: () {
+                      controller.getConversations();
                       closeDrawer();
                     },
-                    label: Text('newConversation'.tr),
-                    icon: const Icon(Icons.add_box),
                   ),
                   const SizedBox(
                     height: 6,
@@ -101,17 +113,13 @@ class ConversationWindow extends StatelessWidget {
                   //     icon: const Icon(Icons.info),
                   //   );
                   // }),
-                  const SizedBox(
-                    height: 6,
-                  ),
-                  TextButton.icon(
-                    style: ButtonStyle(foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onPrimaryContainer)),
+                  IconTextButton(
+                    label: 'settings'.tr,
+                    icon: const Icon(Icons.settings),
                     onPressed: () {
                       closeDrawer();
                       Get.toNamed('/setting');
                     },
-                    label: Text('settings'.tr),
-                    icon: const Icon(Icons.settings),
                   ),
                 ],
               ),

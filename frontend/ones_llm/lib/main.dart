@@ -4,14 +4,15 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
+import 'package:ones_llm/configs/init.dart';
 import 'package:ones_llm/configs/route.dart';
 import 'package:ones_llm/configs/translations.dart';
 import 'package:ones_llm/controller/conversation.dart';
 import 'package:ones_llm/controller/message.dart';
-import 'package:ones_llm/controller/setting.dart';
-import 'package:ones_llm/controller/user.dart';
+import 'package:ones_llm/controller/model.dart';
 import 'package:ones_llm/pages/home.dart';
 import 'package:ones_llm/services/api.dart';
+import 'package:ones_llm/services/local.dart';
 
 void main() async {
   await GetStorage.init();
@@ -24,17 +25,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    initAll();
     Get.put(ApiService());
-    Get.put(UserController());
-    Get.put(SettingController());
+    Get.put(LocalService());
+    Get.put(ModelController());
     Get.put(ConversationController());
     Get.put(MessageController());
     return GetMaterialApp(
-      initialRoute: '/login',
+      initialRoute: '/',
       getPages: routes,
       unknownRoute:
           GetPage(name: '/', page: () => MyHomePage()),
-      theme: FlexThemeData.light(scheme: FlexScheme.jungle),
+      theme: FlexThemeData.light(scheme: FlexScheme.deepBlue),
       darkTheme: FlexThemeData.dark(scheme: FlexScheme.brandBlue),
       themeMode: ThemeMode.system,
       locale: const Locale('zh'),

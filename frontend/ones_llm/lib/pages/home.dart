@@ -15,14 +15,14 @@ class MyHomePage extends GetResponsiveView {
         title: Text('appTitle'.tr),
       ),
       drawer: const ConversationWindow(),
-      body: const ChatWindow(),
+      body: ChatWindow(),
     );
   }
 
   @override
   Widget? desktop() {
     print('desktop');
-    return const Scaffold(
+    return Scaffold(
       body: Row(
         children: [
           ConversationWindow(),
