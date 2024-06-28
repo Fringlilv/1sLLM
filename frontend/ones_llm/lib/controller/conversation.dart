@@ -9,11 +9,11 @@ class ConversationController extends GetxController {
   final currentConversationId = "".obs;
 
   static ConversationController get to => Get.find();
-  // @override
-  // void onInit() async {
-  //   conversationList.value = await api.getConversations();
-  //   super.onInit();
-  // }
+  @override
+  void onInit() async {
+    conversationList.value = await api.getConversations();
+    super.onInit();
+  }
 
   void getConversations() async {
     conversationList.value = await api.getConversations();

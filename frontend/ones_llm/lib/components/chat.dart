@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:ones_llm/components/chat/model_panel.dart';
 import 'package:ones_llm/components/chat/select_card.dart';
 
@@ -18,9 +19,11 @@ class ChatWindow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var width2 = MediaQuery.of(context).size.width;
+    double lrpadding = width2 > 1282 ? (width2 - 1250) / 2 : 16;
     return Container(
       constraints: const BoxConstraints(maxWidth: double.infinity),
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.fromLTRB(lrpadding, 16, lrpadding, 16),
       color: Theme.of(context).colorScheme.secondaryContainer.withAlpha(20),
       child: Row(children: [
         Expanded(
@@ -52,8 +55,7 @@ class ChatWindow extends StatelessWidget {
                             //     msg, () => _selectMessage(msg.role));
                             return SelectCard(
                               selectList: controller.selectingMessageList,
-                              onSelect:
-                                  controller.selectMessage,
+                              onSelect: controller.selectMessage,
                             );
                           }
                         },
@@ -74,21 +76,27 @@ class ChatWindow extends StatelessWidget {
                     height: 48,
                     padding: const EdgeInsets.symmetric(horizontal: 2),
                     child: Obx(
-                      () => ElevatedButton(
-                        onPressed:
-                            Get.find<MessageController>().selecting.isTrue
-                                ? null
-                                : () {
-                                  Get.find<ModelController>().getAvailableProviderModels();
+                      () => Tooltip(
+                        message: 'selectModel'.tr,
+                        child: ElevatedButton(
+                          onPressed: Get.find<MessageController>()
+                                  .selecting
+                                  .isTrue
+                              ? null
+                              : () {
+                                  Get.find<ModelController>()
+                                      .getAvailableProviderModels();
                                   Get.dialog(
-                                    const Dialog(child: ModelSelectWindow()));},
-                        style: ElevatedButton.styleFrom(
-                          shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(30))),
-                          padding: EdgeInsets.zero,
+                                      const Dialog(child: ModelSelectWindow()));
+                                },
+                          style: ElevatedButton.styleFrom(
+                            shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30))),
+                            padding: EdgeInsets.zero,
+                          ),
+                          child: const Icon(FontAwesomeIcons.bars),
                         ),
-                        child: const Icon(FontAwesomeIcons.bars),
                       ),
                     ),
                   ),
@@ -127,20 +135,23 @@ class ChatWindow extends StatelessWidget {
                     height: 48,
                     padding: const EdgeInsets.symmetric(horizontal: 2),
                     child: Obx(
-                      () => ElevatedButton(
-                        onPressed:
-                            Get.find<MessageController>().selecting.isTrue
-                                ? null
-                                : () {
-                                    _sendMessage();
-                                  },
-                        style: ElevatedButton.styleFrom(
-                          shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(30))),
-                          padding: EdgeInsets.zero,
+                      () => Tooltip(
+                        message: 'send'.tr,
+                        child: ElevatedButton(
+                          onPressed:
+                              Get.find<MessageController>().selecting.isTrue
+                                  ? null
+                                  : () {
+                                      _sendMessage();
+                                    },
+                          style: ElevatedButton.styleFrom(
+                            shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30))),
+                            padding: EdgeInsets.zero,
+                          ),
+                          child: const Icon(Icons.send),
                         ),
-                        child: const Icon(Icons.send),
                       ),
                     ),
                   ),
@@ -171,9 +182,11 @@ class ChatWindow extends StatelessWidget {
         );
         conversationController.setCurrentConversationId(conversationId);
       }
-      messageController.sendMessage(
+      bool ret = await messageController.sendMessage(
           conversationId, message, modelController.selected());
-      _textController.text = '';
+      if (ret) {
+        _textController.text = '';
+      }
     }
   }
 

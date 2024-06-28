@@ -26,22 +26,25 @@ class MessageController extends GetxController {
     selecting.value = false;
   }
 
-  void sendMessage(
+  Future<bool> sendMessage(
     String conversationId,
     String text,
     Map<String, List<String>> selectProviderModels
   ) async {
     if (selectProviderModels.isEmpty){
       EasyLoading.showError('notSelectModel'.tr);
-      return;
+      return false;
     }
     selecting.value = true;
     final messages = await api.getMessages(conversationId);
     final sendedMessage = Message(conversationId: conversationId, text: text, role: Get.find<LocalService>().userName);
     messageList.value = [...messages['msgList']!, sendedMessage];
 
+    EasyLoading.show(status: 'generatingResponse'.tr, dismissOnTap: true);
     final newMessages = await api.sendMessage(conversationId, text, selectProviderModels);
+    EasyLoading.dismiss();
     selectingMessageList.value = newMessages;
+    return true;
   }
 
   void selectMessage(

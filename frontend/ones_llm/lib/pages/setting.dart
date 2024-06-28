@@ -15,6 +15,8 @@ class SettingPage extends GetResponsiveView {
 
   @override
   Widget? builder() {
+    var width2 = MediaQuery.of(Get.context!).size.width;
+    double lrpadding = width2 > 632 ? (width2 - 600) / 2 : 16;
     return Scaffold(
       appBar: AppBar(
         title: Text('settings'.tr),
@@ -24,6 +26,7 @@ class SettingPage extends GetResponsiveView {
           builder: (controller) {
             controller.fillApiKeyToControllers(keyControllers);
             return ListView(
+              padding: EdgeInsets.fromLTRB(lrpadding, 32, lrpadding, 16),
               children: [
                 const Divider(),
                 ListTile(

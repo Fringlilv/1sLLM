@@ -22,7 +22,7 @@ class LoginController extends GetxController {
   void register() async {
     final username = userController.text.trim();
     final password = pdController.text.trim();
-    EasyLoading.show(status: 'loginingIn'.tr);
+    EasyLoading.show(status: 'signingUp'.tr);
 
     if (pd2Controller.text.trim() != password) {
       // failmessage = "notSame";
@@ -54,7 +54,7 @@ class LoginController extends GetxController {
     final username = userController.text.trim();
     final password = pdController.text.trim();
     // statu = LoginStatu.tryingLogin;
-    EasyLoading.show(status: 'signingUp'.tr);
+    EasyLoading.show(status: 'loginingIn'.tr);
 
     final res = await api.login(username, password);
     switch (res) {

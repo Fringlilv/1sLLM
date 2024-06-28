@@ -20,7 +20,8 @@ class IconTextButton extends StatelessWidget {
         style: ButtonStyle(
           alignment: Alignment.centerLeft,
           foregroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.onBackground),
-          backgroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.background),
+          // backgroundColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.background),
+          overlayColor: MaterialStatePropertyAll(Theme.of(context).colorScheme.background.withAlpha(200)),
           shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(50))),
         ),
         onPressed: onPressed,

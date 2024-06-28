@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
@@ -29,8 +30,10 @@ class SettingController extends GetxController {
   void onInit() async {
     // await getThemeModeFromPreferences();
     isLogin = local.isLogin;
+    localeText = local.local.toString();
     await initAppVersion();
     super.onInit();
+    update();
   }
 
   initAppVersion() async {
@@ -46,18 +49,18 @@ class SettingController extends GetxController {
     update();
   }
 
-  // getThemeModeFromPreferences() async {
-  //   ThemeMode themeMode;
-  //   GetStorage _box = GetStorage();
-  //   String themeText = _box.read('theme') ?? 'system';
-  //   try {
-  //     themeMode =
-  //         ThemeMode.values.firstWhere((e) => describeEnum(e) == themeText);
-  //   } catch (e) {
-  //     themeMode = ThemeMode.system;
-  //   }
-  //   setThemeMode(themeMode);
-  // }
+  getThemeModeFromPreferences() async {
+    ThemeMode themeMode;
+    GetStorage _box = GetStorage();
+    String themeText = _box.read('theme') ?? 'system';
+    try {
+      themeMode =
+          ThemeMode.values.firstWhere((e) => describeEnum(e) == themeText);
+    } catch (e) {
+      themeMode = ThemeMode.system;
+    }
+    setThemeMode(themeMode);
+  }
 
   void setLocale(Locale lol) {
     local.local = lol;

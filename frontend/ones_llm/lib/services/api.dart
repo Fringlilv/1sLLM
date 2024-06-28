@@ -74,8 +74,8 @@ class ApiService extends GetxService {
       _dio.interceptors.add(CookieManager(PersistCookieJar()));
     }
     _dio.options.baseUrl = baseUrl;
-    _dio.options.connectTimeout = const Duration(milliseconds: 10000);
-    _dio.options.receiveTimeout = const Duration(milliseconds: 10000);
+    _dio.options.connectTimeout = const Duration(milliseconds: 30000);
+    _dio.options.receiveTimeout = const Duration(milliseconds: 30000);
     _dio.options.headers["Accept"] = "application/json";
     _dio.interceptors.add(LogInterceptor(responseBody: true));
     _dio.interceptors.add(errorInterceptor);

@@ -8,10 +8,10 @@ import 'package:ones_llm/services/local.dart';
 
 class MessageCard extends StatelessWidget {
   final Message message;
-const MessageCard({ super.key, required this.message});
+  const MessageCard({super.key, required this.message});
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     final userName = Get.find<LocalService>().userName;
     if (message.role == userName) {
       return Column(
@@ -20,11 +20,11 @@ const MessageCard({ super.key, required this.message});
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              const FaIcon(FontAwesomeIcons.person),
+              Text(userName),
               const SizedBox(
                 width: 5,
               ),
-              Text(userName),
+              const FaIcon(FontAwesomeIcons.solidUser),
               const SizedBox(
                 width: 10,
               )
